@@ -5,19 +5,18 @@
 typedef struct TipoJogador{
     int id, camisa, idade, jogos, gols;
     char *posicao, *nome, *data_nasc, *pais, *pais_jogando, *time;
-    struct TipoJogador *prox;
 }TJ;
 
 typedef struct TipoArvoreBMS{
     int nchaves, folha;
-    TJ ** lista;
-    char **filhos;
+    TJ *lista;
+    int *filhos;
 }TAB;
 
-TAB *TARVB_Inicializa();
-TAB *TARVB_Cria(int t);
-TAB *TARVB_Libera(TAB *a);
-TAB *TARVB_Busca(TAB* x, int ch);
-TAB *TARVB_Insere(TAB *T, int k, int t);
-TAB* TARVB_Retira(TAB* arv, int k, int t);
-void TARVB_Imprime(TAB *a);
+TAB *TAB_Inicializa();
+void TAB_Cria(int t, int corrente);
+TAB *TAB_Busca(char *raiz, int id);
+
+void TAB_Insere(char *raiz, TJ *jogador, int t, int corrente);
+void TAB_Retira(TAB* arv, int k, int t);
+void TAB_Imprime(TAB *a);
