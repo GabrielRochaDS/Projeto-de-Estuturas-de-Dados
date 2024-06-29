@@ -81,8 +81,8 @@ TARVBM *divisao(TARVBM *x, int i, TARVBM* y, int t){
     }
   }
   else {
-    z->nchaves = t; //z possuirá uma chave a mais que y se for folha
-    for(j=0;j < t;j++) z->chave[j] = y->chave[j+t-1];//Caso em que y é folha, temos q passar a info para o nó da direita
+    z->nchaves = t; //z possuirï¿½ uma chave a mais que y se for folha
+    for(j=0;j < t;j++) z->chave[j] = y->chave[j+t-1];//Caso em que y ï¿½ folha, temos q passar a info para o nï¿½ da direita
     z->prox = y->prox; //ultima revisao: 04/2020
     y->prox = z;
   }
@@ -228,7 +228,7 @@ TARVBM* remover(TARVBM* arv, int ch, int t){
           }
           TARVBM_libera(z);
         }
-        for(j=i; j < arv->nchaves-1; j++){ //limpar referências de i
+        for(j=i; j < arv->nchaves-1; j++){ //limpar referï¿½ncias de i
           arv->chave[j] = arv->chave[j+1];
           arv->filho[j+1] = arv->filho[j+2];
         }
