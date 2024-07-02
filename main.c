@@ -10,18 +10,18 @@
 // }TJ;
 
 //===================================Printa um TJ===================================
-void printJogador(TJ jogador) {
-    printf("ID: %d\n", jogador.id);
-    printf("Nome: %s\n", jogador.nome);
-    printf("Camisa: %d\n", jogador.camisa);
-    printf("Idade: %d\n", jogador.idade);
-    printf("Jogos: %d\n", jogador.jogos);
-    printf("Gols: %d\n", jogador.gols);
-    printf("Posição: %s\n", jogador.posicao);
-    printf("Data de Nascimento: %s\n", jogador.data_nasc);
-    printf("País de Origem: %s\n", jogador.pais);
-    printf("País Jogando: %s\n", jogador.pais_jogando);
-    printf("Time: %s\n", jogador.time);
+void printJogador(TJ *jogador) {
+    printf("ID: %d\n", jogador->id);
+    printf("Nome: %s\n", jogador->nome);
+    printf("Camisa: %d\n", jogador->camisa);
+    printf("Idade: %d\n", jogador->idade);
+    printf("Jogos: %d\n", jogador->jogos);
+    printf("Gols: %d\n", jogador->gols);
+    printf("Posição: %s\n", jogador->posicao);
+    printf("Data de Nascimento: %s\n", jogador->data_nasc);
+    printf("País de Origem: %s\n", jogador->pais);
+    printf("País Jogando: %s\n", jogador->pais_jogando);
+    printf("Time: %s\n", jogador->time);
 }
 
 
@@ -57,19 +57,19 @@ TLSE *linhasPais(char *arquivo){
 }
 
 //===================================Le o arquivo e gera a struct Jogador===================================
-void preencherJogador(char *arquivo){
+void preencherJogador(char *arquivo, char *raiz, int t){
     TLSE *linhas = linhasPais(arquivo);
     FILE *fp  = fopen(arquivo, "r");
     
+    TJ *jogador_alocado = (TJ *) malloc (sizeof(TJ));
     TJ jogador;
     char pais[30];
     int a = 1, i = 0;
 
-    while(1){
+    while(1 && i < 3){
         if(TLSE_busca(linhas, i)){
             a = fscanf(fp, "%[^\n]\n", pais);
             if(a!=1)break;
-            printf("%s\n\n", pais);
         }
         else{
             a = fscanf(fp, "%i/", &jogador.id);
@@ -103,29 +103,53 @@ void preencherJogador(char *arquivo){
 
             strcpy(jogador.pais, pais);
 
-            //==============================Jogador Lido || Falta inserir==============================//
-            printJogador(jogador);
-            printf("\n\n");
-            //==============================Jogador Lido || Falta inserir==============================//
+            jogador_alocado->id = jogador.id;
+            jogador_alocado->camisa = jogador.camisa;
+            strcpy(jogador_alocado->posicao, jogador.posicao);
+            strcpy(jogador_alocado->nome , jogador.nome);
+            strcpy(jogador_alocado->data_nasc, jogador.data_nasc);
+            jogador_alocado->idade = jogador.idade;
+            jogador_alocado->jogos = jogador.jogos;
+            jogador_alocado->gols = jogador.gols;
+            strcpy(jogador_alocado->pais_jogando, jogador.pais_jogando);
+            strcpy(jogador_alocado->pais, jogador.pais);
+            strcpy(jogador_alocado->time, jogador.time);
 
+            //==============================Jogador Lido || Falta inserir==============================//
+            TABM_Insere(raiz, jogador_alocado, t, 0);
 
+            //==============================Jogador Lido || Falta inserir==============================//s
         }
         i++;
     }
 
 }
 
-
 int main(void){
-    
-    TABM *arvore = TABM_Cria(3);
-    arvore->folha = 0;
-    arvore->nchaves = 1;
-    arvore->ids[0] = 10;
-    arvore->filhos[0] = 2;
-    arvore->filhos[1] = 3;
-    escrita("11", arvore);
-    TABM *resp = leitura("11");
-    printf("%d \n\n", resp->ids[0]);
 
+    char raiz[10] = "raiz.bin";
+    FILE *fp = fopen(raiz, "wb");
+    int num = -1;
+    fwrite(&num, sizeof(int), 1, fp);
+    fclose(fp);
+    int t = 3;
+    
+    preencherJogador("EURO.txt", raiz, t);
+
+    
+    fp = fopen(raiz, "rb");
+    fread(&num, sizeof(int), 1, fp);
+    fclose(fp);
+
+    char novo_nome[10];
+    GeraNome(novo_nome, num);
+    TABM *resp = leitura(novo_nome, 3);
+    
+    // printJogador(resp->chave[0]);
+    // printJogador(resp->chave[1]);
+    // printJogador(resp->chave[2]);
+
+    TABM_Libera_no(resp, t);
+
+    return 0;
 }

@@ -118,7 +118,7 @@ TARVBM *insere_nao_completo(TARVBM *x, int mat, int t){
 }
 
 TARVBM *TARVBM_insere(TARVBM *T, int mat, int t){
-  if(TARVBM_busca(T, mat)) return T;
+  //if(TARVBM_busca(T, mat)) return T;
   if(!T){
     T=TARVBM_cria(t);
     T->chave[0] = mat;
