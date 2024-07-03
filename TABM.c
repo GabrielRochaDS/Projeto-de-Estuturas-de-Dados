@@ -116,11 +116,53 @@ TABM *TABM_Busca(char *raiz, int id, int t){
     return TABM_Busca(prox, id, t);
 }
 
-void divisao(TABM *x, int i, TABM *y, int t){
+void divisao(TABM *x, int i, TABM *y, int t, int *corrente){
+    TABM *z = TABM_Cria(t);
+    z->folha = y->folha;
+    z->nome = (*corrente);
+    (*corrente) = (*corrente) + 1;
+    int j;
+    if(!y->folha){
+        z->nchaves = t-1;
+        for(j=0;j<t-1;j++) z->ids[j] = y->ids[j+t];
+        for(j=0;j<t;j++){
+            z->filhos[j] = y->filhos[j+t];
+            // y->filhos[j+t] = NULL; Não necessário pois quando escrevermos os nós os filhos excedentes não serão escritos
+            //devido a modificação do y->nchaves;
+        }
+    }
+    else {
+        z->nchaves = t; //z possuir� uma chave a mais que y se for folha
+        for(j = 0; j < t; j++) z->chave[j] = y->chave[j+t-1];//Caso em que y � folha, temos q passar a info para o n� da direita
+        z->prox = y->prox; //ultima revisao: 04/2020
+        y->prox = z->nome;
+    }
+    y->nchaves = t-1;
+    for(j = x->nchaves; j >= i; j--) x->filhos[j+1] = x->filhos[j];
+    x->filhos[i] = z->nome;
+    for(j = x->nchaves; j >= i; j--) x->ids[j] = x->ids[j-1];
+    if (y->folha) x->ids[i-1] = y->chave[t-1]->id;
+    else x->ids[i-1] = y->ids[t-1];
+    x->nchaves++;
+
+    char novo_nomex[10];
+    char novo_nomey[10];
+    char novo_nomez[10];
     
+    GeraNome(novo_nomex, x->nome);
+    GeraNome(novo_nomey, y->nome);
+    GeraNome(novo_nomez, z->nome);
+
+    escrita(novo_nomex, x);
+    escrita(novo_nomey, y);
+    escrita(novo_nomez, z);
+
+    // TABM_Libera_no(z, t);
+    // TABM_Libera_no(x, t);
+    // TABM_Libera_no(y, t);
 }
 
-void insere_nao_completo(TABM *x, TJ *jogador, int t){
+void insere_nao_completo(TABM *x, TJ *jogador, int t, int *corrente){
     int i = x->nchaves - 1;
     if (x->folha){
         while((i>=0) && (jogador->id < x->chave[i]->id)){
@@ -128,26 +170,37 @@ void insere_nao_completo(TABM *x, TJ *jogador, int t){
             i--;
         }
         x->chave[i+1] = jogador;
-        x->nchaves++;
+        x->nchaves += 1;
         char novo_nome[10];
         GeraNome(novo_nome, x->nome);
         escrita(novo_nome, x);
+        // TABM_Libera_no(x, t);
         return;
     }
 
-    while((i>=0) && (jogador->id < x->chave[i]->id)) i--;
+    while((i >= 0) && (jogador->id < x->ids[i])) i--;
     i++;
 
     char novo_nome[10];
     GeraNome(novo_nome, x->filhos[i]);
     TABM *no_filho = leitura(novo_nome, t);
 
-    if(no_filho->nchaves == ((2*t)-1)){
-        divisao(x, (i+1), no_filho, t);
-        if(jogador->id > x->chave[i]->id) i++;
+    if(no_filho->nchaves == ((2*t)-1)){         //MODIFICAÇÃO: LER NÓ ATUALIZADO PÓS DIVISÃO
+
+        int nome_x = x->nome;
+
+        divisao(x, (i+1), no_filho, t, corrente);
+        
+        char novo_nomex[10];
+        GeraNome(novo_nomex, nome_x);
+
+        x = leitura(novo_nomex, t);
+        no_filho = leitura(novo_nome, t);
+
+        if(jogador->id > x->ids[i]) i++;
     }
-    //TABM_Libera_no(x, t);
-    insere_nao_completo(no_filho, jogador, t);
+    // TABM_Libera_no(x, t);
+    insere_nao_completo(no_filho, jogador, t, corrente);
 }
 
 void TABM_Insere(char *raiz, TJ *jogador, int t, int *corrente){
@@ -168,13 +221,13 @@ void TABM_Insere(char *raiz, TJ *jogador, int t, int *corrente){
         char nome_novo[10];
         GeraNome(nome_novo, 0);
 
-        (*corrente) = 0;
+        (*corrente) = 1;
     
         rewind(fp);
         fwrite(&novo->nome, sizeof(int), 1, fp);
         
         escrita(nome_novo, novo);
-        //TABM_Libera_no(novo, t);
+        // TABM_Libera_no(novo, t);
         fclose(fp);
         return;
     }
@@ -190,24 +243,33 @@ void TABM_Insere(char *raiz, TJ *jogador, int t, int *corrente){
     TABM *no = leitura(novo_nome, t);
 
 
-    // if (no->nchaves == ((2 * t) - 1)){
-    //     TABM *S = TABM_Cria(t);
-    //     S->nchaves = 0;
-    //     S->folha = 0;
-    //     S->filhos[0] = prim_arq;
-    //     S->nome = (*corrente);
+    if (no->nchaves == ((2 * t) - 1)){
+        TABM *S = TABM_Cria(t);
+        S->nchaves = 0;
+        S->folha = 0;
+        S->filhos[0] = prim_arq;
+        S->nome = (*corrente);
 
-    //     char novo_nome2[10];
-    //     GeraNome(novo_nome2, (*corrente));
-    //     fwrite(corrente, sizeof(int), 1, fp);
-    //     (*corrente) = (*corrente) + 1;
+        char novo_nome2[10];
+        GeraNome(novo_nome2, (*corrente));
+        rewind(fp);
+        fwrite(corrente, sizeof(int), 1, fp);
+        (*corrente) = (*corrente) + 1;
 
-    //     divisao(S, 1, no, t);
-    //     insere_nao_completo(S, jogador, t);
-    //     fclose(fp);
-    //     return;
-    // }
-    insere_nao_completo(no, jogador, t);
+        int nome_S = S->nome;
+
+        divisao(S, 1, no, t, corrente);       //MODIFICAÇÃO: LER NÓ ATUALIZADO PÓS DIVISÃO
+
+        char novo_nomeS[10];
+        GeraNome(novo_nomeS, nome_S);
+        S = leitura(novo_nomeS, t);
+
+        insere_nao_completo(S, jogador, t, corrente);
+        fclose(fp);
+        return;
+    }
+
+    insere_nao_completo(no, jogador, t, corrente);
     fclose(fp);
 }
 
@@ -237,11 +299,11 @@ void TABM_Imprime_No(TABM *a){
     }
 }
 
-void 
-TABM_Libera_no(TABM *no, int t){
+void TABM_Libera_no(TABM *no, int t){
     if (!no) return;
-    for (int i = 0; i < (2 * t); i++) free(no->chave[i]);
+    for (int i = 0; i < ((2 * t)); i++) free(no->chave[i]);
     free(no->chave);
-    free(no->ids);
+    //free(no->ids);
     free(no->filhos);
+    free(no);
 }

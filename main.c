@@ -61,12 +61,14 @@ void preencherJogador(char *arquivo, char *raiz, int t){
     TLSE *linhas = linhasPais(arquivo);
     FILE *fp  = fopen(arquivo, "r");
     
+    int corrente = 0;
+
     TJ *jogador_alocado = (TJ *) malloc (sizeof(TJ));
     TJ jogador;
     char pais[30];
     int a = 1, i = 0;
 
-    while(i<4){
+    while(i<5){
         if(TLSE_busca(linhas, i)){
             a = fscanf(fp, "%[^\n]\n", pais);
             if(a!=1)break;
@@ -116,7 +118,6 @@ void preencherJogador(char *arquivo, char *raiz, int t){
             strcpy(jogador_alocado->time, jogador.time);
 
             //==============================Jogador Lido || Falta inserir==============================//
-            int corrente = 0;
             TABM_Insere(raiz, jogador_alocado, t, &corrente);
             //printJogador(jogador_alocado);
             //printf("\n\n");
@@ -128,13 +129,13 @@ void preencherJogador(char *arquivo, char *raiz, int t){
 }
 
 int main(void){
-
+    
     char raiz[10] = "raiz.bin";
     FILE *fp = fopen(raiz, "wb");
     int num = -1;
     fwrite(&num, sizeof(int), 1, fp);
     fclose(fp);
-    int t = 3;
+    int t = 2;
     
     preencherJogador("EURO.txt", raiz, t);
 
@@ -142,17 +143,22 @@ int main(void){
     fp = fopen(raiz, "rb");
     fread(&num, sizeof(int), 1, fp);
     fclose(fp);
+    printf("%i\n\n", num);
 
     char novo_nome[10];
     GeraNome(novo_nome, num);
 
-    TABM *resp = leitura(novo_nome, 3);
+    TABM *resp = leitura(novo_nome, t);
+
+    char novo_nome2[10];
+    GeraNome(novo_nome2, resp->filhos[0]);
+    TABM *filho = leitura(novo_nome2, t);
     
-    printJogador(resp->chave[0]);
+    
+    
+    printJogador(filho->chave[0]);
     printf("\n\n");
-    printJogador(resp->chave[1]);
-    printf("\n\n");
-    printJogador(resp->chave[2]);
+
 
     // TABM_Libera_no(resp, t);
 
