@@ -4,26 +4,6 @@
 #include "Funcoes/TLSE.c"
 #include "TABM.c"
 
-// typedef struct TipoJogador{
-//     int id, camisa, idade, jogos, gols;
-//     char posicao[3], nome[40], data_nasc[40], pais[20], pais_jogando[20], time[40];
-// }TJ;
-
-//===================================Printa um TJ===================================
-void printJogador(TJ *jogador) {
-    printf("ID: %d\n", jogador->id);
-    printf("Nome: %s\n", jogador->nome);
-    printf("Camisa: %d\n", jogador->camisa);
-    printf("Idade: %d\n", jogador->idade);
-    printf("Jogos: %d\n", jogador->jogos);
-    printf("Gols: %d\n", jogador->gols);
-    printf("Posição: %s\n", jogador->posicao);
-    printf("Data de Nascimento: %s\n", jogador->data_nasc);
-    printf("País de Origem: %s\n", jogador->pais);
-    printf("País Jogando: %s\n", jogador->pais_jogando);
-    printf("Time: %s\n", jogador->time);
-}
-
 
 //===================================Boolean para ver se uma string é pais===================================
 int pais(char *nome){
@@ -130,34 +110,30 @@ void preencherJogador(char *arquivo, char *raiz, int t){
 
 int main(void){
     
+    //Criando a raiz
     char raiz[10] = "raiz.bin";
     FILE *fp = fopen(raiz, "wb");
     int num = -1;
     fwrite(&num, sizeof(int), 1, fp);
     fclose(fp);
     int t = 2;
-    
+
+    //Preenchendo os jogadores
     preencherJogador("EURO.txt", raiz, t);
 
-    
+    //Lendo a raiz
     fp = fopen(raiz, "rb");
     fread(&num, sizeof(int), 1, fp);
     fclose(fp);
-    printf("%i\n\n", num);
-
     char novo_nome[10];
     GeraNome(novo_nome, num);
-
     TABM *resp = leitura(novo_nome, t);
 
-    char novo_nome2[10];
-    GeraNome(novo_nome2, resp->filhos[0]);
-    TABM *filho = leitura(novo_nome2, t);
     
-    
-    
-    printJogador(filho->chave[0]);
-    printf("\n\n");
+    //Imprimindo nos
+    TABM_Imprime_no(resp->nome, t);    
+    TABM_Imprime_no(resp->filhos[0], t);
+    TABM_Imprime_no(resp->filhos[1], t);
 
 
     // TABM_Libera_no(resp, t);

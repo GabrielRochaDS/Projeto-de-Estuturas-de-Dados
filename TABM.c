@@ -1,5 +1,19 @@
 #include "TABM.h"
 
+void printJogador(TJ *jogador) {
+    printf("ID: %d\n", jogador->id);
+    printf("Nome: %s\n", jogador->nome);
+    printf("Camisa: %d\n", jogador->camisa);
+    printf("Idade: %d\n", jogador->idade);
+    printf("Jogos: %d\n", jogador->jogos);
+    printf("Gols: %d\n", jogador->gols);
+    printf("Posição: %s\n", jogador->posicao);
+    printf("Data de Nascimento: %s\n", jogador->data_nasc);
+    printf("País de Origem: %s\n", jogador->pais);
+    printf("País Jogando: %s\n", jogador->pais_jogando);
+    printf("Time: %s\n", jogador->time);
+}
+
 void GeraNome(char *nome, int corrente){
     sprintf(nome, "%d.bin", corrente);
 }
@@ -278,24 +292,35 @@ void TABM_Insere(char *raiz, TJ *jogador, int t, int *corrente){
 // }
 
 
-void TABM_Imprime_No(TABM *a){
-    int i;
+void TABM_Imprime_no(int num, int t){
 
+    char novo_nome2[10];
+    GeraNome(novo_nome2, num);
+    TABM *a = leitura(novo_nome2, t);
+
+    int i;
+    
     if (a->folha){
-        printf("Nó da árvore:\n");
-        printf("\n");
+        printf("=====Nó da árvore=====\n");
+        printf("Número do árquivo: %d\n", a->nome);
         printf("Número de chaves: %d\n", a->nchaves);
         printf("Folha: %d\n", a->folha);
-        for (i = 0; i < a->nchaves; i++) printf("ID Jogador[%d] = %d\n", i, a->chave[i]->id);
-        for(i = 0; i < (a->nchaves+1); i++) printf("Nome do filho[%d] = %d\n", i, a->filhos[i]);
+        printf("Id do próximo: %d\n", a->prox);
+        printf("\n");
+        printf("=====Jogadores=====\n");
+        for (i = 0; i < a->nchaves; i++){
+            printJogador(a->chave[i]);
+            printf("\n");
+        }
     }
     else{
-        printf("Nó da árvore:\n");
-        printf("\n");
+        printf("=====Nó da árvore=====\n");
+        printf("Número do árquivo: %d\n", a->nome);
         printf("Número de chaves: %d\n", a->nchaves);
         printf("Folha: %d\n", a->folha);
         for (i = 0; i < a->nchaves; i++) printf("ID Jogador[%d] = %d\n", i, a->ids[i]);
         for(i = 0; i < (a->nchaves+1); i++) printf("Nome do filho[%d] = %d\n", i, a->filhos[i]);
+        printf("\n");
     }
 }
 

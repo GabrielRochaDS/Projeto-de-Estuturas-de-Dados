@@ -16,6 +16,8 @@ typedef struct TipoArvoreBMS{
     int prox;
 }TABM;
 
+void printJogador(TJ *jogador);
+
 void inicializa_raiz(char *raiz);
 
 int leitura_raiz(char *raiz);
@@ -38,4 +40,4 @@ void TABM_Libera_no(TABM *no, int t);
 
 // void TABM_Retira(TAB* arv, int k, int t);
 
-void TABM_Imprime_no(TABM *a);
+void TABM_Imprime_no(int num, int t);
