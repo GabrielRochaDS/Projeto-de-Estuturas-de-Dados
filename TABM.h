@@ -16,6 +16,10 @@ typedef struct TipoArvoreBMS{
     int prox;
 }TABM;
 
+void inicializa_raiz(char *raiz);
+
+int leitura_raiz(char *raiz);
+
 TABM *leitura(char *nome, int t);
 
 void escrita(char *nome, TABM *no);

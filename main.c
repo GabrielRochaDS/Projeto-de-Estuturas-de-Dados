@@ -66,7 +66,7 @@ void preencherJogador(char *arquivo, char *raiz, int t){
     char pais[30];
     int a = 1, i = 0;
 
-    while(1 && i < 3){
+    while(i<4){
         if(TLSE_busca(linhas, i)){
             a = fscanf(fp, "%[^\n]\n", pais);
             if(a!=1)break;
@@ -116,8 +116,10 @@ void preencherJogador(char *arquivo, char *raiz, int t){
             strcpy(jogador_alocado->time, jogador.time);
 
             //==============================Jogador Lido || Falta inserir==============================//
-            TABM_Insere(raiz, jogador_alocado, t, 0);
-
+            int corrente = 0;
+            TABM_Insere(raiz, jogador_alocado, t, &corrente);
+            //printJogador(jogador_alocado);
+            //printf("\n\n");
             //==============================Jogador Lido || Falta inserir==============================//s
         }
         i++;
@@ -143,13 +145,16 @@ int main(void){
 
     char novo_nome[10];
     GeraNome(novo_nome, num);
+
     TABM *resp = leitura(novo_nome, 3);
     
-    // printJogador(resp->chave[0]);
-    // printJogador(resp->chave[1]);
-    // printJogador(resp->chave[2]);
+    printJogador(resp->chave[0]);
+    printf("\n\n");
+    printJogador(resp->chave[1]);
+    printf("\n\n");
+    printJogador(resp->chave[2]);
 
-    TABM_Libera_no(resp, t);
+    // TABM_Libera_no(resp, t);
 
     return 0;
 }
