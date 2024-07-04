@@ -48,7 +48,7 @@ void preencherJogador(char *arquivo, char *raiz, int t){
     char pais[30];
     int a = 1, i = 0;
 
-    while(i<5){
+    while(1){
         if(TLSE_busca(linhas, i)){
             a = fscanf(fp, "%[^\n]\n", pais);
             if(a!=1)break;
@@ -102,10 +102,12 @@ void preencherJogador(char *arquivo, char *raiz, int t){
             //printJogador(jogador_alocado);
             //printf("\n\n");
             //==============================Jogador Lido || Falta inserir==============================//s
+
+
         }
         i++;
     }
-
+    
 }
 
 int main(void){
@@ -116,24 +118,26 @@ int main(void){
     int num = -1;
     fwrite(&num, sizeof(int), 1, fp);
     fclose(fp);
-    int t = 2;
+    int t = 21;
 
     //Preenchendo os jogadores
     preencherJogador("EURO.txt", raiz, t);
 
     //Lendo a raiz
-    fp = fopen(raiz, "rb");
-    fread(&num, sizeof(int), 1, fp);
-    fclose(fp);
-    char novo_nome[10];
-    GeraNome(novo_nome, num);
-    TABM *resp = leitura(novo_nome, t);
+        // fp = fopen(raiz, "rb");
+        // fread(&num, sizeof(int), 1, fp);
+        // fclose(fp);
+        // char novo_nome[10];
+        // GeraNome(novo_nome, num);
+        // TABM *resp = leitura(novo_nome, t);
 
+    //Imprimindo ids
+    TABM_Imprime_ids("raiz.bin", t); 
     
     //Imprimindo nos
-    TABM_Imprime_no(resp->nome, t);    
-    TABM_Imprime_no(resp->filhos[0], t);
-    TABM_Imprime_no(resp->filhos[1], t);
+        // TABM_Imprime_no(resp->nome, t);    
+        // TABM_Imprime_no(resp->filhos[1], t);
+        // TABM_Imprime_no(resp->filhos[2], t);
 
 
     // TABM_Libera_no(resp, t);

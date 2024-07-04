@@ -104,6 +104,8 @@ TABM *TABM_Busca(char *raiz, int id, int t){
     int num;
     fread(&num, sizeof(int), 1, fp);
 
+    if (num == -1) return NULL;                      //Se a raíz se encontra vazia, retorna
+
     char novo_nome[10];
     GeraNome(novo_nome, num);
 
@@ -209,9 +211,13 @@ void insere_nao_completo(TABM *x, TJ *jogador, int t, int *corrente){
         GeraNome(novo_nomex, nome_x);
 
         x = leitura(novo_nomex, t);
-        no_filho = leitura(novo_nome, t);
 
-        if(jogador->id > x->ids[i]) i++;
+        if(jogador->id > x->ids[i]){
+            char novo_nome_filho[10];
+            GeraNome(novo_nome_filho, x->filhos[i + 1]);
+            no_filho = leitura(novo_nome_filho, t);
+        }
+        else no_filho = leitura(novo_nome, t);
     }
     // TABM_Libera_no(x, t);
     insere_nao_completo(no_filho, jogador, t, corrente);
@@ -287,9 +293,83 @@ void TABM_Insere(char *raiz, TJ *jogador, int t, int *corrente){
     fclose(fp);
 }
 
-// void TABM_Retira(TABM* arv, int k, int t){
+void remover(TABM *a, int id, int t){
+    if(!a) return;
+    int i;
+    for(i = 0; i < a->nchaves && a->chave[i] < id; i++);
+    if((i < a->nchaves) && (id == a->chave[i]) && (a->folha)){ //CASO 1
+        printf("\nCASO 1\n");
+        int j;
+        for(j = i; j < a->nchaves-1;j++) a->chave[j] = a->chave[j+1];
+        a->nchaves -= 1;
+        char novo_nome[10];
+        GeraNome(novo_nome, a->nome);
+        escrita(novo_nome, a);
+        //TABM_Libera_no(a, t);                             //Liberação do nó não feita
+    }
+}
 
-// }
+void TABM_Retira(char *raiz, int id, int t){
+    FILE *fp = fopen(raiz, "wb");
+    int num;
+    fread(&num, sizeof(int), 1, fp);
+    fclose(fp);
+
+    if (num == -1){
+        printf("-----------------ERRO-NA-REMOÇÃO-----------------\nÁrvore Vazia.\n"); 
+        return;
+    }
+    
+    TABM *a = TABM_Busca(raiz, id, t);
+    if(!a){
+        printf("-----------------ERRO-NA-REMOÇÃO-----------------\nJogador não se encontra na árvore.\n");
+        return;
+    }
+    remover(a, id, t);
+}
+
+
+
+void TABM_Imprime_ids(char *raiz, int t){
+    FILE *fp = fopen(raiz, "rb");
+    if(!fp) exit(1);
+    int num, i;
+    fread(&num, sizeof(int), 1, fp);
+    fclose(fp);
+
+    if (num == -1){
+        printf("Árvore Vazia.\n"); 
+        return;
+    }
+
+    char novo_nome[10];
+    GeraNome(novo_nome, num);
+    TABM *resp = leitura(novo_nome, t);
+
+    while(!resp->folha){
+        novo_nome[0] = '\0';
+        GeraNome(novo_nome, resp->filhos[0]);
+        resp = leitura(novo_nome, t);
+    }
+    while(1){
+        printf("( ");
+        for(i = 0; i<resp->nchaves; i++){
+            if (i  < resp->nchaves-1){
+                printf("%i | ", resp->chave[i]->id);
+            }
+            else {printf("%i ", resp->chave[i]->id);
+            }
+        }
+        printf(")-->");   
+        if(resp->prox == -1)break;
+
+        novo_nome[0] = '\0';
+        GeraNome(novo_nome, resp->prox);
+        resp = leitura(novo_nome, t);
+    }
+    printf("\n");
+
+}
 
 
 void TABM_Imprime_no(int num, int t){
