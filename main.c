@@ -48,7 +48,7 @@ void preencherJogador(char *arquivo, char *raiz, int t){
     char pais[30];
     int a = 1, i = 0;
 
-    while(1){
+    while(1 && i < 6){
         if(TLSE_busca(linhas, i)){
             a = fscanf(fp, "%[^\n]\n", pais);
             if(a!=1)break;
@@ -118,26 +118,36 @@ int main(void){
     int num = -1;
     fwrite(&num, sizeof(int), 1, fp);
     fclose(fp);
-    int t = 21;
+    int t = 2;
 
     //Preenchendo os jogadores
     preencherJogador("EURO.txt", raiz, t);
 
     //Lendo a raiz
-        // fp = fopen(raiz, "rb");
-        // fread(&num, sizeof(int), 1, fp);
-        // fclose(fp);
-        // char novo_nome[10];
-        // GeraNome(novo_nome, num);
-        // TABM *resp = leitura(novo_nome, t);
+    // fp = fopen(raiz, "rb");
+    // fread(&num, sizeof(int), 1, fp);
+    // fclose(fp);
+    // char novo_nome[10];
+    // GeraNome(novo_nome, num);
+    // TABM *resp = leitura(novo_nome, t);
 
-    //Imprimindo ids
-    TABM_Imprime_ids("raiz.bin", t); 
+    // //Imprimindo ids
+    // // TABM_Imprime_ids("raiz.bin", t); 
     
-    //Imprimindo nos
-        // TABM_Imprime_no(resp->nome, t);    
-        // TABM_Imprime_no(resp->filhos[1], t);
-        // TABM_Imprime_no(resp->filhos[2], t);
+    // //Imprimindo nos
+    // TABM_Imprime_no(resp->nome, t);    
+    //     // TABM_Imprime_no(resp->filhos[1], t);
+    //     // TABM_Imprime_no(resp->filhos[2], t);
+
+
+    // //Restringi o preenche jogador para 3 pra testar o caso 1 da retira!!
+    // TABM_Retira(raiz, 1, t);
+    
+
+    // resp = leitura(novo_nome, t);
+    // TABM_Imprime_no(resp->nome, t);
+    TABM *resp = TABM_Busca(raiz, 131, t);
+    TABM_Imprime_no(resp->nome, t);
 
 
     // TABM_Libera_no(resp, t);
