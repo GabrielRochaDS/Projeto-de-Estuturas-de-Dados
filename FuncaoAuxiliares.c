@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "TLSETJ.c"
+
 //=========================================Structs====================================================
 //(01)
 typedef struct Id_Idade{ 
@@ -24,7 +26,8 @@ typedef struct Id_Pais{
 
 //===============Id_Idade===============//
 void printId_Idade(){
-    FILE *arq = fopen("Id_Idade","rb+");
+    FILE *arq = fopen("Id_Idade.bin","rb+");
+    if(!arq)exit(1);
     Id_Idade id_idade;
     int aux; 
 
@@ -37,13 +40,15 @@ void printId_Idade(){
 }
 void insertId_Idade(Id_Idade *jogador, int i){
     if(i == 1){
-        FILE *arq = fopen("Id_Idade","wb+");
+        FILE *arq = fopen("Id_Idade.bin","wb+");
+        if(!arq)exit(1);
         fwrite(jogador, sizeof(Id_Idade), 1, arq);
         fclose(arq);
         return;
     }
 
-    FILE *arq = fopen("Id_Idade","rb+");
+    FILE *arq = fopen("Id_Idade.bin","rb+");
+    if(!arq)exit(1);
     fseek(arq, 0, SEEK_END);
     int tam = ftell(arq)/sizeof(Id_Idade);
 
@@ -70,6 +75,7 @@ void insertId_Idade(Id_Idade *jogador, int i){
 
 void printId_Jogos(){
     FILE *arq = fopen("Id_Jogos.bin","rb+");
+    if(!arq)exit(1);
     Id_Jogos id_jogos;
     int aux; 
 
@@ -83,12 +89,14 @@ void printId_Jogos(){
 void insertId_Jogos(Id_Jogos *jogador, int i){
     if(i == 1){
         FILE *arq = fopen("Id_Jogos.bin","wb+");
+        if(!arq)exit(1);
         fwrite(jogador, sizeof(Id_Jogos), 1, arq);
         fclose(arq);
         return;
     }
 
     FILE *arq = fopen("Id_Jogos.bin","rb+");
+    if(!arq)exit(1);
     fseek(arq, 0, SEEK_END);
     int tam = ftell(arq)/sizeof(Id_Jogos);
 
@@ -115,6 +123,7 @@ void insertId_Jogos(Id_Jogos *jogador, int i){
 //===============Id_Pais===============//
 void printId_Pais(){
     FILE *arq = fopen("Id_Pais.bin","rb+");
+    if(!arq)exit(1);
     Id_Pais id_pais;
     int aux; 
 
@@ -129,12 +138,14 @@ void printId_Pais(){
 void insertId_Pais( Id_Pais *jogador, int i){
     if(i == 1){
         FILE *arq = fopen("Id_Pais.bin","wb+");
+        if(!arq)exit(1);
         fwrite(jogador, sizeof(Id_Pais), 1, arq);
         fclose(arq);
         return;
     }
 
     FILE *arq = fopen("Id_Pais.bin","rb+");
+    if(!arq)exit(1);
     fseek(arq, 0, SEEK_END);
     int tam = ftell(arq)/sizeof(Id_Pais);
 
@@ -160,3 +171,90 @@ void insertId_Pais( Id_Pais *jogador, int i){
 
 //=========================================Funçoes Busca====================================================//
 
+//===============Mais novo Mais Velho===============//
+
+TLSETJ *maisNovo_maisVelho(char *raiz, int t){
+    FILE *arq = fopen("Id_Idade.bin","rb+");
+    if(!arq)exit(1);
+    
+    Id_Idade jogador;
+    TLSETJ *resp = NULL;
+
+    fread(&jogador, sizeof(Id_Idade), 1, arq);
+    TABM *novo = TABM_Busca(raiz,jogador.id, t);
+
+    int i;
+    for(i = 0; i<novo->nchaves; i++){
+        if(novo->chave[i]->id == jogador.id)break;
+    }
+    resp = TLSETJ_insere(resp, novo->chave[i]);
+
+    //TABM_Libera_no(novo, t);
+
+    fseek(arq, -sizeof(Id_Idade), SEEK_END);
+
+
+    fread(&jogador, sizeof(Id_Idade), 1, arq);
+    novo = TABM_Busca(raiz,jogador.id, t);
+
+    for(i = 0; i<novo->nchaves; i++){
+        if(novo->chave[i]->id == jogador.id)break;
+    }
+    resp = TLSETJ_insere(resp, novo->chave[i]);
+
+    //TABM_Libera_no(novo, t);
+    return resp;
+}
+
+TLSETJ *maisNovo_maisVelhoPosicao(char *raiz, char *posicao, int t){
+    FILE *arq = fopen("Id_Idade.bin","rb+");
+    if(!arq)exit(1);
+    
+    int aux, i, pos = -1;
+    Id_Idade jogador;
+    TLSETJ *resp = NULL;
+
+    while(1){
+        aux = fread(&jogador, sizeof(Id_Idade), 1, arq);
+        if(aux != 1){
+            break;
+        }
+
+        TABM *novo = TABM_Busca(raiz,jogador.id, t);
+        for(i = 0; i<novo->nchaves; i++){
+            if(novo->chave[i]->id == jogador.id)break;
+        }
+
+        if(strcmp(posicao, novo->chave[i]->posicao) == 0){
+            resp = TLSETJ_insere(resp, novo->chave[i]);
+            break;
+        }
+        //TABM_Libera_no(novo, t);
+    }
+
+    while (1){
+        fseek(arq, pos*sizeof(Id_Idade), SEEK_END);
+        aux = fread(&jogador, sizeof(Id_Idade), 1, arq);
+        if(aux != 1){
+            break;
+        }
+
+        TABM *novo = TABM_Busca(raiz,jogador.id, t);
+
+        for(i = 0; i<novo->nchaves; i++){
+            if(novo->chave[i]->id == jogador.id)break;
+        }
+
+        if(strcmp(posicao, novo->chave[i]->posicao) == 0){
+            resp = TLSETJ_insere(resp, novo->chave[i]);
+            break;
+        }
+        pos --;
+        //TABM_Libera_no(novo, t);
+    }
+    return resp;
+}
+
+TLSETJ *maisNovo_maisVelhoSelecao(char *raiz, char *selecao, int t){
+
+}

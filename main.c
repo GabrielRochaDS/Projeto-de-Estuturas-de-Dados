@@ -1,5 +1,5 @@
 #include "Funcoes/TLSE.c"
-#include "TABM.c"   
+//#include "TABM.c"   
 #include "FuncaoAuxiliares.c"
 
 
@@ -55,7 +55,7 @@ void preencherJogador(char *arquivo, char *raiz, int t){
     int corrente = 0;
 
     //==============Loop le todo EURO.txt==============//
-    while(1){
+    while(1 && i < 11){
         if(TLSE_busca(linhas, i)){
             a = fscanf(fp, "%[^\n]\n", pais);
             if(a!=1)break;
@@ -150,23 +150,32 @@ int main(void){
     // printf("\n\n");
     // printId_Jogos();
     // printf("\n\n");
-    printId_Pais();
-    printf("\n\n");
+    // printId_Pais();
+    // printf("\n\n");
+
+    //==============TLSETJ funcoes auxiliares==============//
+    
+    // TLSETJ *lista = maisNovo_maisVelhoPosicao(raiz,"MF",t);
+    // TLSETJ_imprime(lista);
+
 
     //==============Imprimindo ids==============//
-    // TABM_Imprime_ids(raiz, t);
+    TABM_Imprime_ids(raiz, t);
 
 
     //==============Testes Retira==============//
-    // TABM_Retira(raiz, 152, t);
+    // TABM_Retira(raiz, 1, t);
+    TABM_Retira(raiz, 152, t);
     // TABM_Retira(raiz, 131, t);
     // TABM_Retira(raiz, 216, t);
 
 
 
     //==============Imprime Ids e libera==============//
-    // TABM_Imprime_ids(raiz, t);
+    TABM_Imprime_ids(raiz, t);
     // TABM_Libera_no(resp, t);
+
+
 
     return 0;
 }
