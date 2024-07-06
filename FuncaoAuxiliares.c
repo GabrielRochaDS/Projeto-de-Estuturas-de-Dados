@@ -37,6 +37,7 @@ void printId_Idade(){
         printf("(%i %i) ", id_idade.id, id_idade.idade);
     }
     fclose(arq);
+    printf("\n");
 }
 void insertId_Idade(Id_Idade *jogador, int i){
     if(i == 1){
@@ -49,6 +50,7 @@ void insertId_Idade(Id_Idade *jogador, int i){
 
     FILE *arq = fopen("Id_Idade.bin","rb+");
     if(!arq)exit(1);
+    int aux;
     fseek(arq, 0, SEEK_END);
     int tam = ftell(arq)/sizeof(Id_Idade);
 
@@ -64,10 +66,32 @@ void insertId_Idade(Id_Idade *jogador, int i){
         j--;
         if(j<0)break;
         fseek(arq, j*sizeof(Id_Idade), SEEK_SET);
-        fread(&comparador, sizeof(Id_Idade), 1, arq);
+        aux = fread(&comparador, sizeof(Id_Idade), 1, arq);
+        if(aux != 1)break;
     }
     fseek(arq, (j+1)*sizeof(Id_Idade), SEEK_SET);
     fwrite(jogador, sizeof(Id_Idade), 1, arq);
+    fclose(arq);
+}
+
+void removeId_Idade(int id){
+    FILE *arq = fopen("Id_Idade.bin","rb+");
+    if(!arq)exit(1);
+    Id_Idade comparador;
+    int aux;
+    while(1){
+        aux = fread(&comparador, sizeof(Id_Idade), 1, arq);
+        if(aux != 1){
+            printf("Jogador nao encontrado.");
+            return;
+        }
+        if(id == comparador.id)break;
+    
+    }
+    fseek(arq, -sizeof(Id_Idade), SEEK_CUR);
+    comparador.id = -1;
+    comparador.idade = -1;
+    fwrite(&comparador, sizeof(Id_Idade), 1, arq);
     fclose(arq);
 }
 
@@ -85,6 +109,7 @@ void printId_Jogos(){
         printf("(%i %i) ", id_jogos.id, id_jogos.jogos);
     }
     fclose(arq);
+    printf("\n");
 }
 void insertId_Jogos(Id_Jogos *jogador, int i){
     if(i == 1){
@@ -119,6 +144,26 @@ void insertId_Jogos(Id_Jogos *jogador, int i){
     fclose(arq);
 }
 
+void removeId_Jogo(int id){
+    FILE *arq = fopen("Id_Jogos.bin","rb+");
+    if(!arq)exit(1);
+    Id_Jogos comparador;
+    int aux;
+    while(1){
+        aux = fread(&comparador, sizeof(Id_Jogos), 1, arq);
+        if(aux != 1){
+            printf("Jogador nao encontrado.");
+            return;
+        }
+        if(id == comparador.id)break;
+    
+    }
+    fseek(arq, -sizeof(Id_Jogos), SEEK_CUR);
+    comparador.id = -1;
+    comparador.jogos = -1;
+    fwrite(&comparador, sizeof(Id_Jogos), 1, arq);
+    fclose(arq);
+}
 
 //===============Id_Pais===============//
 void printId_Pais(){
@@ -133,6 +178,7 @@ void printId_Pais(){
         printf("(%i %s) ", id_pais.id, id_pais.pais);
     }
     fclose(arq);
+    printf("\n");
 }
 
 void insertId_Pais( Id_Pais *jogador, int i){
@@ -165,6 +211,27 @@ void insertId_Pais( Id_Pais *jogador, int i){
     }
     fseek(arq, (j+1)*sizeof(Id_Pais), SEEK_SET);
     fwrite(jogador, sizeof(Id_Pais), 1, arq);
+    fclose(arq);
+}
+
+void removeId_Pais(int id){
+    FILE *arq = fopen("Id_Pais.bin","rb+");
+    if(!arq)exit(1);
+    Id_Pais comparador;
+    int aux;
+    while(1){
+        aux = fread(&comparador, sizeof(Id_Pais), 1, arq);
+        if(aux != 1){
+            printf("Jogador nao encontrado.");
+            return;
+        }
+        if(id == comparador.id)break;
+    
+    }
+    fseek(arq, -sizeof(Id_Pais), SEEK_CUR);
+    comparador.id = -1;
+    strcpy(comparador.pais, "-1");
+    fwrite(&comparador, sizeof(Id_Pais), 1, arq);
     fclose(arq);
 }
 
@@ -535,23 +602,21 @@ TLSETJ *Jogadores_AtuamNaOritem(char *raiz, int t){
     fclose(arq);
 }
 
-//===============Seleção com mais atuantes dentro/fora origem===============// Q5 e Q6
-
-/*
-(9) Busca da(s) seleção(ções) com mais jogadores que atuam fora do seu país de origem;
-(10) Busca da(s) seleção(ções) com mais jogadores que atuam no seu país de origem;
-*/
+//===============Seleção com mais atuantes dentro/fora origem===============// Q5 e Q6               
+//====================================================================================================================================================//
+//Dando erro, alguns dao um a mais e outros um a menos
 
 
 void PrintSelecoesComMaisFora(char *raiz, int t){
     FILE *arq = fopen("Id_Pais.bin","rb+");
     if(!arq)exit(1);
     Id_Pais id_pais;
-    int aux, i; 
+    int aux, i, interac = 1; 
     char maiorSelec[10][40], atual[40];
     int qtdAtual = 0, maior = 0, qtdMaiorSelec = 0;
 
     while(1){
+        
         aux = fread(&id_pais, sizeof(Id_Pais), 1, arq);
         if(aux != 1)break;
 
@@ -560,37 +625,101 @@ void PrintSelecoesComMaisFora(char *raiz, int t){
             if(novo->chave[i]->id == id_pais.id)break;
         }
 
-        if(strcmp(novo->chave[i]->pais_jogando, atual) != 0){
-            qtdAtual = 1;
-            strcpy(atual, novo->chave[i]->pais_jogando);
+        if(interac == 1){
+            qtdMaiorSelec = 1;
+            qtdAtual = 0;
+            maior = qtdAtual;
+            strcpy(maiorSelec[0], id_pais.pais);
+            interac = -1;
         }
-        if(strcmp(novo->chave[i]->pais_jogando, id_pais.pais) != 0){
+        if(strcmp(id_pais.pais, atual) != 0){
+            qtdAtual = 1;
+            printf("%s", id_pais.pais);
+            strcpy(atual, id_pais.pais);
+        }else if(strcmp(novo->chave[i]->pais_jogando, id_pais.pais) != 0){
+            qtdAtual += 1;
+            
             if(qtdAtual > maior){
                 qtdMaiorSelec = 1;
+                maior = qtdAtual;
                 strcpy(maiorSelec[0], id_pais.pais);
-            }
-            if(qtdAtual == maior){
+            }else if(qtdAtual == maior){
                 strcpy(maiorSelec[qtdMaiorSelec], id_pais.pais);
                 qtdMaiorSelec++;
             }
-            qtdAtual ++;
-        }
-        
+        } 
+        printf("%i\n", qtdAtual);
         //TABM_Libera_no(novo, t);
     }
 
     for(i = 0; i < qtdMaiorSelec; i++){
         printf("%s\n", maiorSelec[i]);
     }
+    printf("%d\n", qtdAtual);
+}
 
+void PrintSelecoesComMaisDentro(char *raiz, int t){
+    FILE *arq = fopen("Id_Pais.bin","rb+");
+    if(!arq)exit(1);
+    Id_Pais id_pais;
+    int aux, i, interac = 1; 
+    char maiorSelec[10][40], atual[40];
+    int qtdAtual = 0, maior = 0, qtdMaiorSelec = 0;
+
+    while(1){
+        
+        aux = fread(&id_pais, sizeof(Id_Pais), 1, arq);
+        if(aux != 1)break;
+
+        TABM *novo = TABM_Busca(raiz, id_pais.id, t);
+        for(i = 0; i<novo->nchaves; i++){
+            if(novo->chave[i]->id == id_pais.id)break;
+        }
+
+        if(interac == 1){
+            qtdMaiorSelec = 1;
+            qtdAtual = 0;
+            maior = qtdAtual;
+            strcpy(maiorSelec[0], id_pais.pais);
+            interac = -1;
+        }
+        if(strcmp(id_pais.pais, atual) != 0){
+            qtdAtual = 1;
+            printf("%s", id_pais.pais);
+            strcpy(atual, id_pais.pais);
+        }else if(strcmp(novo->chave[i]->pais_jogando, id_pais.pais) == 0){
+            qtdAtual += 1;
+            
+            if(qtdAtual > maior){
+                qtdMaiorSelec = 1;
+                maior = qtdAtual;
+                strcpy(maiorSelec[0], id_pais.pais);
+            }else if(qtdAtual == maior){
+                strcpy(maiorSelec[qtdMaiorSelec], id_pais.pais);
+                qtdMaiorSelec++;
+            }
+        } 
+        printf("%i\n", qtdAtual);
+        //TABM_Libera_no(novo, t);
+    }
+
+    for(i = 0; i < qtdMaiorSelec; i++){
+        printf("%s\n", maiorSelec[i]);
+    }
+    printf("%d\n", qtdAtual);
 }
 
 
 
 
-
 //===============Remoção de Jogadores dado um conjunto contendo suas chaves primárias===============//
+// void RemoveJogadoresConjunto (char *raiz, int t){
+//     int n;
+//     do{
+//         scanf("%")
 
+//     }while(n > 0);
+// }
 
 
 

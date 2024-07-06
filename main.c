@@ -54,7 +54,7 @@ void preencherJogador(char *arquivo, char *raiz, int t){
     int corrente = 0;
 
     //==============Loop le todo EURO.txt==============//
-    while(1){
+    while(1 && i<10){
         if(TLSE_busca(linhas, i)){
             a = fscanf(fp, "%[^\n]\n", pais);
             if(a!=1)break;
@@ -146,11 +146,21 @@ int main(void){
 
     //==============Print Funcoes auxiliares==============//
     // printId_Idade();
+    // removeId_Idade(1);
+    // printId_Idade();
+
     // printf("\n\n");
     // printId_Jogos();
+    // removeId_Jogo(1);
+    // printId_Jogos();
+
+
     // printf("\n\n");
-    // printId_Pais();
-    // printf("\n\n");
+    printId_Pais();
+    removeId_Pais(1);
+    printId_Pais();
+
+    printf("\n\n");
 
     //==============TLSETJ funcoes auxiliares Idade==============//
     // TLSETJ *lista = HL_Idade(raiz,t);
@@ -169,7 +179,9 @@ int main(void){
     // TLSETJ *lista = Jogadores_AtuamFora(raiz, t);
     // TLSETJ *lista = Jogadores_AtuamNaOritem(raiz, t);
     // TLSETJ_imprime(lista);
-    PrintSelecoesComMaisFora(raiz, t);
+    // PrintSelecoesComMaisFora(raiz, t);
+    // PrintSelecoesComMaisDentro(raiz, t);
+
     //==============Imprimindo ids==============//
     // TABM_Imprime_ids(raiz, t);
 
