@@ -1,4 +1,3 @@
-#include "Funcoes/TLSE.c"
 //#include "TABM.c"   
 #include "FuncaoAuxiliares.c"
 
@@ -55,7 +54,7 @@ void preencherJogador(char *arquivo, char *raiz, int t){
     int corrente = 0;
 
     //==============Loop le todo EURO.txt==============//
-    while(1 && i<5){
+    while(1){
         if(TLSE_busca(linhas, i)){
             a = fscanf(fp, "%[^\n]\n", pais);
             if(a!=1)break;
@@ -170,46 +169,49 @@ int main(void){
     // TLSETJ *lista = Jogadores_AtuamFora(raiz, t);
     // TLSETJ *lista = Jogadores_AtuamNaOritem(raiz, t);
     // TLSETJ_imprime(lista);
-
+    PrintSelecoesComMaisFora(raiz, t);
     //==============Imprimindo ids==============//
-    TABM_Imprime_ids(raiz, t);
+    // TABM_Imprime_ids(raiz, t);
 
 
 
     //==============Testes Retira==============//
-    FILE *teste = fopen(raiz, "rb");
-    if (!fp) exit(1);
+    // FILE *teste = fopen(raiz, "rb");
+    // if (!fp) exit(1);
 
-    fread(&num, sizeof(int), 1, teste);
-    fclose(fp);
+    // fread(&num, sizeof(int), 1, teste);
+    // fclose(fp);
     
-    char nome_n[10];
-    GeraNome(nome_n, num);
-    TABM *no = leitura(nome_n, t);
+    // char nome_n[10];
+    // GeraNome(nome_n, num);
+    // TABM *no = leitura(nome_n, t);
 
-    TABM_Imprime_no(no->nome, t);
+    // TABM_Imprime_no(no->nome, t);
 
-    TABM_Retira(raiz, 38, t);
-    // // TABM_Retira(raiz, 152, t);
-    TABM_Retira(raiz, 131, t);
-    TABM_Retira(raiz, 216, t);
+    // // TABM_Retira(raiz, 38, t);
+    // TABM_Retira(raiz, 194, t);
+    // TABM_Retira(raiz, 216, t);
+    // TABM_Retira(raiz, 267, t);
+    // TABM_Retira(raiz, 63, t);
+    // // TABM_Retira(raiz, 131, t);
+    // // TABM_Retira(raiz, 1, t);
 
-    FILE *teste2 = fopen(raiz, "rb");
-    if (!fp) exit(1);
+    // FILE *teste2 = fopen(raiz, "rb");
+    // if (!fp) exit(1);
 
-    fread(&num, sizeof(int), 1, teste2);
-    fclose(fp);
+    // fread(&num, sizeof(int), 1, teste2);
+    // fclose(fp);
     
-    char nome_n2[10];
-    GeraNome(nome_n2, num);
-    TABM *no2 = leitura(nome_n2, t);
+    // char nome_n2[10];
+    // GeraNome(nome_n2, num);
+    // TABM *no2 = leitura(nome_n2, t);
 
-    TABM_Imprime_no(no2->nome, t);
+    // TABM_Imprime_no(no2->nome, t);
 
 
 
     //==============Imprime Ids e libera==============//
-    TABM_Imprime_ids(raiz, t);
+    // TABM_Imprime_ids(raiz, t);
     // TABM_Libera_no(resp, t);
 
 

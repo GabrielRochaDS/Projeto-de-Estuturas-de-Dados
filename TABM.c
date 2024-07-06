@@ -437,7 +437,7 @@ void remover(char *raiz, TABM *a, int id, int t){
             }
 
             // //CASO 3B
-            if (i < (a->nchaves - 1)){
+            if (i <= (a->nchaves - 1)){
                 char nome_irmaofrente[10];
                 GeraNome(nome_irmaofrente, a->filhos[i + 1]);
                 TABM *zf = leitura(nome_irmaofrente, t);        //Lendo o irmão da direita primeiramente

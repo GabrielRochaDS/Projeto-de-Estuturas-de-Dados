@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "Funcoes/TLSE.c"
 #include "TLSETJ.c"
 
 //=========================================Structs====================================================
@@ -541,4 +541,56 @@ TLSETJ *Jogadores_AtuamNaOritem(char *raiz, int t){
 (9) Busca da(s) seleção(ções) com mais jogadores que atuam fora do seu país de origem;
 (10) Busca da(s) seleção(ções) com mais jogadores que atuam no seu país de origem;
 */
+
+
+void PrintSelecoesComMaisFora(char *raiz, int t){
+    FILE *arq = fopen("Id_Pais.bin","rb+");
+    if(!arq)exit(1);
+    Id_Pais id_pais;
+    int aux, i; 
+    char maiorSelec[10][40], atual[40];
+    int qtdAtual = 0, maior = 0, qtdMaiorSelec = 0;
+
+    while(1){
+        aux = fread(&id_pais, sizeof(Id_Pais), 1, arq);
+        if(aux != 1)break;
+
+        TABM *novo = TABM_Busca(raiz, id_pais.id, t);
+        for(i = 0; i<novo->nchaves; i++){
+            if(novo->chave[i]->id == id_pais.id)break;
+        }
+
+        if(strcmp(novo->chave[i]->pais_jogando, atual) != 0){
+            qtdAtual = 1;
+            strcpy(atual, novo->chave[i]->pais_jogando);
+        }
+        if(strcmp(novo->chave[i]->pais_jogando, id_pais.pais) != 0){
+            if(qtdAtual > maior){
+                qtdMaiorSelec = 1;
+                strcpy(maiorSelec[0], id_pais.pais);
+            }
+            if(qtdAtual == maior){
+                strcpy(maiorSelec[qtdMaiorSelec], id_pais.pais);
+                qtdMaiorSelec++;
+            }
+            qtdAtual ++;
+        }
+        
+        //TABM_Libera_no(novo, t);
+    }
+
+    for(i = 0; i < qtdMaiorSelec; i++){
+        printf("%s\n", maiorSelec[i]);
+    }
+
+}
+
+
+
+
+
+//===============Remoção de Jogadores dado um conjunto contendo suas chaves primárias===============//
+
+
+
 
