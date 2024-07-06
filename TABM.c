@@ -322,115 +322,129 @@ void remover(TABM *a, int id, int t){
         char nome_filhoy[10];
         GeraNome(nome_filhoy, a->filhos[i]);
         TABM *y = leitura(nome_filhoy, t);
-        printf("Pass1");
 
         if (y->nchaves == t - 1){
-            char nome_irmaofrente[10];
-            GeraNome(nome_irmaofrente, a->filhos[i + 1]);
-            TABM *zf = leitura(nome_irmaofrente, t);        //Lendo o irmão da direita primeiramente
+            if (i < a->nchaves - 1){
+                char nome_irmaofrente[10];
+                GeraNome(nome_irmaofrente, a->filhos[i + 1]);
+                TABM *zf = leitura(nome_irmaofrente, t);        //Lendo o irmão da direita primeiramente
 
-            if((i < a->nchaves) && (zf->nchaves >= t)){
-                printf("\nCASO 3A: i menor que nchaves\n"); //Irmão da direita possui chave, caso restritos para nós com i != a->nchaves (filho da borda direita);
-                if (!y->folha){
-                    y->ids[t-1] = a->ids[i];                //dar a y a chave i da arv
-                    a->ids[i] = zf->ids[0];                 //dar a arv uma chave de z
+                if((i < a->nchaves) && (zf->nchaves >= t)){
+                    printf("\nCASO 3A: i menor que nchaves\n"); //Irmão da direita possui chave, caso restritos para nós com i != a->nchaves (filho da borda direita);
+                    if (!y->folha){
+                        y->ids[t-1] = a->ids[i];                //dar a y a chave i da arv
+                        a->ids[i] = zf->ids[0];                 //dar a arv uma chave de z
 
-                    y->nchaves += 1;
+                        y->nchaves += 1;
 
-                    int j;
-                    for(j = 0; j < zf->nchaves - 1; j++)    //ajustar chaves de z
-                        zf->ids[j] = zf->ids[j+1];
-                    y->filhos[y->nchaves] = zf->filhos[0];  //enviar ponteiro menor de z para o novo elemento em y
-                    for(j = 0; j < zf->nchaves; j++)        //ajustar filhos de z
-                        zf->filhos[j] = zf->filhos[j + 1];
-                    zf->nchaves -= 1;
-                    printf("Pass2");
+                        int j;
+                        for(j = 0; j < zf->nchaves - 1; j++)    //ajustar chaves de z
+                            zf->ids[j] = zf->ids[j+1];
+                        y->filhos[y->nchaves] = zf->filhos[0];  //enviar ponteiro menor de z para o novo elemento em y
+                        for(j = 0; j < zf->nchaves; j++)        //ajustar filhos de z
+                            zf->filhos[j] = zf->filhos[j + 1];
+                        zf->nchaves -= 1;
+                        printf("Pass2");
 
-                    char nome_pai[10];
-                    GeraNome(nome_pai, a->nome);
+                        char nome_pai[10];
+                        GeraNome(nome_pai, a->nome);
 
-                    escrita(nome_pai, a);
-                    escrita(nome_filhoy, y);
-                    escrita(nome_irmaofrente, zf);
+                        escrita(nome_pai, a);
+                        escrita(nome_filhoy, y);
+                        escrita(nome_irmaofrente, zf);
 
-                    TABM_Libera_no(zf, t);
-                    remover(y, id, t);
-                    return;
+                        //TABM_Libera_no(zf, t);
+                        remover(y, id, t);
+                        return;
+                    }
+                    else{
+                        a->ids[i] = zf->chave[0]->id + 1;
+                        y->chave[t-1] = zf->chave[0];
+
+                        y->nchaves += 1;
+
+                        int j;
+                        for(j = 0; j < zf->nchaves - 1; j++)    //ajustar chaves de z
+                            zf->chave[j] = zf->chave[j+1];
+                        zf->nchaves -= 1;
+
+                        char nome_pai[10];
+                        GeraNome(nome_pai, a->nome);
+
+                        escrita(nome_pai, a);
+                        escrita(nome_filhoy, y);
+                        escrita(nome_irmaofrente, zf);
+
+                        //TABM_Libera_no(zf, t);
+                        remover(y, id, t);
+                        return;
+                    }
                 }
-                else{
-                    a->ids[i] = zf->chave[0]->id + 1;
-                    y->chave[t-1] = zf->chave[0];
+            }
 
-                    y->nchaves += 1;
+            //TABM_Libera_no(zf, t);  //Liberando o nó do irmão da frente que não vingou
+            if (i > 0){
+                char nome_irmaotras[10];
+                GeraNome(nome_irmaotras, a->filhos[i - 1]);
+                TABM *zt = leitura(nome_irmaotras, t);
 
-                    int j;
-                    for(j = 0; j < zf->nchaves - 1; j++)    //ajustar chaves de z
-                        zf->chave[j] = zf->chave[j+1];
-                    zf->nchaves -= 1;
+                if((i > 0) && (zt->nchaves >=t)){ //CASO 3A   OLHA IRMÃO ESQUERDA
+                    printf("\n");
+                    printf("\nCASO 3A: i igual a nchaves\n");
+                    printf("\n");
 
+                    if (!y->folha){
+                        int j;
+                        for(j = y->nchaves; j > 0; j--)         //encaixar lugar da nova chave
+                            y->ids[j] = y->ids[j-1];
+                        for(j = y->nchaves + 1; j > 0; j--)     //encaixar lugar dos filhos da nova chave
+                            y->filhos[j] = y->filhos[j-1];
+
+                        y->ids[0] = a->ids[i-1];                //dar a y a chave i da arv
+                        a->ids[i-1] = zt->ids[zt->nchaves - 1]; //dar a arv uma chave de z
+
+                        y->nchaves += 1;
+
+                        y->filhos[0] = zt->filhos[zt->nchaves]; //enviar ponteiro de z para o novo elemento em y
+                        zt->nchaves -= 1;
+                        
+                    }
+                    else{
+                        int j;
+                        for(j = y->nchaves; j > 0; j--)         //encaixar lugar da nova chave
+                            y->chave[j] = y->chave[j-1];
+                        a->ids[i-1] = zt->chave[zt->nchaves - 1]->id;
+                        y->chave[0] = zt->chave[zt->nchaves-1];
+
+                        y->nchaves += 1;
+                        zt->nchaves -= 1;
+                    }
+                    
                     char nome_pai[10];
                     GeraNome(nome_pai, a->nome);
 
                     escrita(nome_pai, a);
                     escrita(nome_filhoy, y);
-                    escrita(nome_irmaofrente, zf);
+                    escrita(nome_irmaotras, zt);
 
-                    TABM_Libera_no(zf, t);
+                    //TABM_Libera_no(zt, t);
+                    
                     remover(y, id, t);
                     return;
                 }
             }
 
-            //TABM_Libera_no(zf, t);  //Liberando o nó do irmão da frente que não vingou
-
-            char nome_irmaotras[10];
-            GeraNome(nome_irmaotras, a->filhos[i - 1]);
-            TABM *zt = leitura(nome_irmaotras, t);
-
-            if((i > 0) && (zt->nchaves >=t)){ //CASO 3A
-                printf("\nCASO 3A: i igual a nchaves\n");
-
-                if (!y->folha){
-                    int j;
-                    for(j = y->nchaves; j > 0; j--)         //encaixar lugar da nova chave
-                        y->ids[j] = y->ids[j-1];
-                    for(j = y->nchaves + 1; j > 0; j--)     //encaixar lugar dos filhos da nova chave
-                        y->filhos[j] = y->filhos[j-1];
-
-                    y->ids[0] = a->ids[i-1];                //dar a y a chave i da arv
-                    a->ids[i-1] = zt->ids[zt->nchaves - 1]; //dar a arv uma chave de z
-
-                    y->nchaves += 1;
-
-                    y->filhos[0] = zt->filhos[zt->nchaves]; //enviar ponteiro de z para o novo elemento em y
-                    zt->nchaves -= 1;
-                    
-                }
-                else{
-                    int j;
-                    for(j = y->nchaves; j > 0; j--)         //encaixar lugar da nova chave
-                        y->chave[j] = y->chave[j-1];
-                    a->ids[i-1] = zt->chave[zt->nchaves - 1]->id;
-                    y->chave[0] = zt->chave[zt->nchaves-1];
-
-                    y->nchaves += 1;
-                    zt->nchaves -= 1;
-                }
-                
-                char nome_pai[10];
-                GeraNome(nome_pai, a->nome);
-
-                escrita(nome_pai, a);
-                escrita(nome_filhoy, y);
-                escrita(nome_irmaotras, zt);
-
-                //TABM_Libera_no(zt, t);
-                
-                remover(y, id, t);
-                return;
-            }    
+            //CASO 3B
         }
     }
+
+    char nome_prox_filho[10];
+    GeraNome(nome_prox_filho, a->filhos[i]);
+    TABM *no_prox_filho = leitura(nome_prox_filho, t);
+
+    // TABM_Libera_no(a, t);
+
+    remover(no_prox_filho, id, t);
 }
 
 void TABM_Retira(char *raiz, int id, int t){
@@ -533,11 +547,11 @@ void TABM_Imprime_no(int num, int t){
     }
 }
 
-void TABM_Libera_no(TABM *no, int t){
-    if (!no) return;
-    for (int i = 0; i < ((2 * t)); i++) free(no->chave[i]);
-    free(no->chave);
-    //free(no->ids);
-    free(no->filhos);
-    free(no);
-}
+// void TABM_Libera_no(TABM *no, int t){
+//     if (!no) return;
+//     for (int i = 0; i < ((2 * t)); i++) free(no->chave[i]);
+//     free(no->chave);
+//     //free(no->ids);
+//     free(no->filhos);
+//     free(no);
+// }
