@@ -4,7 +4,7 @@
 
 typedef struct TipoJogador{
     int id, camisa, idade, jogos, gols;
-    char posicao[3], nome[40], data_nasc[40], pais[20], pais_jogando[20], time[40];
+    char posicao[3], nome[40], data_nasc[40], pais[40], pais_jogando[40], time[40];
 }TJ;
 
 typedef struct TipoArvoreBMS{

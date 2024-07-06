@@ -344,18 +344,6 @@ void remover(TABM *a, int id, int t){
                         for(j = 0; j < zf->nchaves; j++)        //ajustar filhos de z
                             zf->filhos[j] = zf->filhos[j + 1];
                         zf->nchaves -= 1;
-                        printf("Pass2");
-
-                        char nome_pai[10];
-                        GeraNome(nome_pai, a->nome);
-
-                        escrita(nome_pai, a);
-                        escrita(nome_filhoy, y);
-                        escrita(nome_irmaofrente, zf);
-
-                        //TABM_Libera_no(zf, t);
-                        remover(y, id, t);
-                        return;
                     }
                     else{
                         a->ids[i] = zf->chave[0]->id + 1;
@@ -367,22 +355,21 @@ void remover(TABM *a, int id, int t){
                         for(j = 0; j < zf->nchaves - 1; j++)    //ajustar chaves de z
                             zf->chave[j] = zf->chave[j+1];
                         zf->nchaves -= 1;
-
-                        char nome_pai[10];
-                        GeraNome(nome_pai, a->nome);
-
-                        escrita(nome_pai, a);
-                        escrita(nome_filhoy, y);
-                        escrita(nome_irmaofrente, zf);
-
-                        //TABM_Libera_no(zf, t);
-                        remover(y, id, t);
-                        return;
                     }
+                    char nome_pai[10];
+                    GeraNome(nome_pai, a->nome);
+
+                    escrita(nome_pai, a);
+                    escrita(nome_filhoy, y);
+                    escrita(nome_irmaofrente, zf);
+
+                    //TABM_Libera_no(zf, t);
+                    remover(y, id, t);
+                    return;
                 }
+                //TABM_Libera_no(zf, t);
             }
 
-            //TABM_Libera_no(zf, t);  //Liberando o nó do irmão da frente que não vingou
             if (i > 0){
                 char nome_irmaotras[10];
                 GeraNome(nome_irmaotras, a->filhos[i - 1]);
@@ -432,9 +419,49 @@ void remover(TABM *a, int id, int t){
                     remover(y, id, t);
                     return;
                 }
+                //TABM_Libera_no(zt, t);
             }
 
             //CASO 3B
+            if (i < (a->nchaves - 1)){
+                char nome_irmaofrente[10];
+                GeraNome(nome_irmaofrente, a->filhos[i + 1]);
+                TABM *zf = leitura(nome_irmaofrente, t);        //Lendo o irmão da direita primeiramente
+
+                if ((i < a->nchaves) && (zf->nchaves == t-1)){
+                    printf("\nCASO 3B: i menor que nchaves\n");
+
+                    if (!y->folha){
+                        y->ids[t-1] = a->ids[i];
+                        y->nchaves += 1; 
+                    }
+
+                    int j = 0;
+                    while(j < t-1){
+                        if(!y->folha) y->ids[t+j] = zf->ids[j];
+                        else y->chave[t+j-1] = zf->chave[j];
+                        y->nchaves += 1;
+                        j += 1;
+                    }
+
+                    if (y->folha) y->prox = zf->prox;
+
+                    if(!y->folha){
+                        for(j = 0; j < t; j++) y->filhos[t+j] = zf->filhos[j];
+                    }
+
+                    for(j = i; j < a->nchaves-1; j++){ //limpar refer�ncias de i
+                        a->ids[j] = a->ids[j+1];
+                        a->filhos[j+1] = a->filhos[j+2];
+                    }
+
+                    a->nchaves -= 1;
+
+                    if(!a->nchaves){
+                        
+                    }
+                }
+            }
         }
     }
 

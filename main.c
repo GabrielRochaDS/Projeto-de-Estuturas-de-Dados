@@ -1,57 +1,6 @@
 #include "Funcoes/TLSE.c"
 #include "TABM.c"   
-//#include "FuncaoAuxiliares.c"
-
-
-//=============================================================================================
-typedef struct Id_Idade{
-    int id, idade;
-}Id_Idade;
-
-void printId_Idade(char *nomeArq){
-    FILE *arq = fopen(nomeArq,"rb+");
-    Id_Idade id_idade;
-    int aux; 
-
-    while(1){
-        aux = fread(&id_idade, sizeof(Id_Idade), 1, arq);
-        if(aux != 1)break;
-        printf("(%i %i) ", id_idade.id, id_idade.idade);
-    }
-    fclose(arq);
-}
-void insertSort(char *nomeArq, Id_Idade *jogador, int i){
-    if(i == 1){
-        FILE *arq = fopen(nomeArq,"wb+");
-        fwrite(jogador, sizeof(Id_Idade), 1, arq);
-        fclose(arq);
-    }
-
-
-    FILE *arq = fopen(nomeArq,"rb+");
-    fseek(arq, 0, SEEK_END);
-    int tam = ftell(arq)/sizeof(Id_Idade);
-
-    Id_Idade *comparador = (Id_Idade *)malloc(sizeof(Id_Idade));
-    int j = tam-1;
-    fseek(arq, j*sizeof(Id_Idade), SEEK_SET);
-
-    fread(comparador, sizeof(Id_Idade), 1, arq);
-    while(comparador->idade > jogador->idade){
-        fseek(arq, (j+1)*sizeof(Id_Idade), SEEK_SET);
-        fwrite(comparador, sizeof(Id_Idade), 1, arq);
-
-        j--;
-        if(j<0)break;
-        fseek(arq, j*sizeof(Id_Idade), SEEK_SET);
-        fread(comparador, sizeof(Id_Idade), 1, arq);
-    }
-    fseek(arq, (j+1)*sizeof(Id_Idade), SEEK_SET);
-    fwrite(jogador, sizeof(Id_Idade), 1, arq);
-
-    free(comparador);
-    fclose(arq);
-}
+#include "FuncaoAuxiliares.c"
 
 
 
@@ -91,16 +40,22 @@ void preencherJogador(char *arquivo, char *raiz, int t){
     TLSE *linhas = linhasPais(arquivo);
     FILE *fp  = fopen(arquivo, "r");
 
-    Id_Idade *idIdade = (Id_Idade *)malloc(sizeof(Id_Idade));
-    
-    int corrente = 0;
+    //==============Funções Auxiliares iniciando==============//
+    Id_Idade *idIdade = (Id_Idade *) malloc (sizeof(Id_Idade));
+    Id_Jogos *idJogos = (Id_Jogos *) malloc (sizeof(Id_Jogos));
+    Id_Pais *idPais = (Id_Pais *) malloc (sizeof(Id_Pais));
 
+    
+    
+    //==============Alocando TJ==============//
     TJ *jogador_alocado = (TJ *) malloc (sizeof(TJ));
     TJ jogador;
     char pais[30];
     int a = 1, i = 0;
+    int corrente = 0;
 
-    while(1 && i < 7){
+    //==============Loop le todo EURO.txt==============//
+    while(1){
         if(TLSE_busca(linhas, i)){
             a = fscanf(fp, "%[^\n]\n", pais);
             if(a!=1)break;
@@ -149,28 +104,37 @@ void preencherJogador(char *arquivo, char *raiz, int t){
             strcpy(jogador_alocado->pais, jogador.pais);
             strcpy(jogador_alocado->time, jogador.time);
 
-            //==============================Jogador Lido || Falta inserir==============================//
+            //==============================Jogador Lido E inserindo==============================//
             TABM_Insere(raiz, jogador_alocado, t, &corrente);
-            //printJogador(jogador_alocado);
-            //printf("\n\n");
+            
+            //==============Funções Auxiliares inserindo==============//
             idIdade->id = jogador.id;
             idIdade->idade = jogador.idade;
-            // printf("(%d -- %d) ", idIdade->id, idIdade->idade);
-            insertSort("Id_Idade", idIdade, i);
-            
-            //==============================Jogador Lido || Falta inserir==============================//s
+            insertId_Idade(idIdade, i);
 
+            idJogos->id = jogador.id;
+            idJogos->jogos = jogador.jogos;
+            insertId_Jogos(idJogos, i);
+
+            idPais->id = jogador.id;
+            strcpy(idPais->pais, jogador.pais);
+            insertId_Pais(idPais, i);
 
         }
         i++;
     }
+    free(idIdade);
+    free(idJogos);
+    free(idPais);
+
+
     printf("\n");
     
 }
 
 int main(void){
     
-    //Criando a raiz
+    //==============Criando a raiz==============//
     char raiz[10] = "raiz.bin";
     FILE *fp = fopen(raiz, "wb");
     int num = -1;
@@ -178,27 +142,30 @@ int main(void){
     fclose(fp);
     int t = 2;
 
-    //Preenchendo os jogadores
+    //==============Preenchendo os jogadores==============//
     preencherJogador("EURO.txt", raiz, t);
 
-    printId_Idade("Id_Idade");
+    //==============Print Funcoes auxiliares==============//
+    // printId_Idade();
+    // printf("\n\n");
+    // printId_Jogos();
+    // printf("\n\n");
+    printId_Pais();
     printf("\n\n");
 
-    // //Imprimindo ids
+    //==============Imprimindo ids==============//
     // TABM_Imprime_ids(raiz, t);
 
-    // //Restringi o preenche jogador para 3 pra testar o caso 1 da retira!!
 
+    //==============Testes Retira==============//
     // TABM_Retira(raiz, 152, t);
     // TABM_Retira(raiz, 131, t);
     // TABM_Retira(raiz, 216, t);
 
-    
-    // printf("\n");
-    // printf("\n");
 
-    TABM_Imprime_ids(raiz, t);
 
+    //==============Imprime Ids e libera==============//
+    // TABM_Imprime_ids(raiz, t);
     // TABM_Libera_no(resp, t);
 
     return 0;
