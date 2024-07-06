@@ -171,9 +171,9 @@ void insertId_Pais( Id_Pais *jogador, int i){
 
 //=========================================Funçoes Busca====================================================//
 
-//===============Mais novo Mais Velho===============//
+//===============Mais novo Mais Velho===============// Q1
 
-TLSETJ *maisNovo_maisVelho(char *raiz, int t){
+TLSETJ *HL_Idade(char *raiz, int t){
     FILE *arq = fopen("Id_Idade.bin","rb+");
     if(!arq)exit(1);
     
@@ -206,7 +206,7 @@ TLSETJ *maisNovo_maisVelho(char *raiz, int t){
     return resp;
 }
 
-TLSETJ *maisNovo_maisVelhoPosicao(char *raiz, char *posicao, int t){
+TLSETJ *HL_IdadePosicao(char *raiz, char *posicao, int t){
     FILE *arq = fopen("Id_Idade.bin","rb+");
     if(!arq)exit(1);
     
@@ -255,6 +255,290 @@ TLSETJ *maisNovo_maisVelhoPosicao(char *raiz, char *posicao, int t){
     return resp;
 }
 
-TLSETJ *maisNovo_maisVelhoSelecao(char *raiz, char *selecao, int t){
+TLSETJ *HL_IdadeSelecao(char *raiz, char *selecao, int t){
+    FILE *arq = fopen("Id_Idade.bin","rb+");
+    if(!arq)exit(1);
+    
+    int aux, i, pos = -1;
+    Id_Idade jogador;
+    TLSETJ *resp = NULL;
 
+    while(1){
+        aux = fread(&jogador, sizeof(Id_Idade), 1, arq);
+        if(aux != 1){
+            break;
+        }
+
+        TABM *novo = TABM_Busca(raiz,jogador.id, t);
+        for(i = 0; i<novo->nchaves; i++){
+            if(novo->chave[i]->id == jogador.id)break;
+        }
+
+        if(strcmp(selecao, novo->chave[i]->pais) == 0){
+            resp = TLSETJ_insere(resp, novo->chave[i]);
+            break;
+        }
+        //TABM_Libera_no(novo, t);
+    }
+
+    while (1){
+        fseek(arq, pos*sizeof(Id_Idade), SEEK_END);
+        aux = fread(&jogador, sizeof(Id_Idade), 1, arq);
+        if(aux != 1){
+            break;
+        }
+
+        TABM *novo = TABM_Busca(raiz,jogador.id, t);
+
+        for(i = 0; i<novo->nchaves; i++){
+            if(novo->chave[i]->id == jogador.id)break;
+        }
+
+        if(strcmp(selecao, novo->chave[i]->pais) == 0){
+            resp = TLSETJ_insere(resp, novo->chave[i]);
+            break;
+        }
+        pos --;
+        //TABM_Libera_no(novo, t);
+    }
+    return resp;
 }
+
+
+//===============Mais e menos atuação===============// Q2 e Q3
+
+TLSETJ *HL_AtuacaoSelecao(char *raiz, char *selecao, int t){
+    FILE *arq = fopen("Id_Jogos.bin","rb+");
+    if(!arq)exit(1);
+    
+    int aux, i, pos = -1;
+    Id_Jogos jogador;
+    TLSETJ *resp = NULL;
+    int atuacao = -1, interac = 1;
+
+    while(1){
+        aux = fread(&jogador, sizeof(Id_Jogos), 1, arq);
+        if(aux != 1){
+            break;
+        }
+
+        TABM *novo = TABM_Busca(raiz,jogador.id, t);
+        for(i = 0; i<novo->nchaves; i++){
+            if(novo->chave[i]->id == jogador.id)break;
+        }
+
+        if(strcmp(selecao, novo->chave[i]->pais) == 0){
+            if(interac == 1){
+                interac = -1;
+                atuacao = novo->chave[i]->jogos;
+            }
+            if(interac != 1 && novo->chave[i]->jogos != atuacao){   
+                break;
+            }
+            resp = TLSETJ_insere(resp, novo->chave[i]);
+            
+        }
+        //TABM_Libera_no(novo, t);
+    }
+    atuacao = -1;
+    interac = 1;
+
+    while (1){
+        fseek(arq, pos*sizeof(Id_Jogos), SEEK_END);
+        aux = fread(&jogador, sizeof(Id_Jogos), 1, arq);
+        if(aux != 1){
+            break;
+        }
+
+        TABM *novo = TABM_Busca(raiz,jogador.id, t);
+
+        for(i = 0; i<novo->nchaves; i++){
+            if(novo->chave[i]->id == jogador.id)break;
+        }
+
+        if(strcmp(selecao, novo->chave[i]->pais) == 0){
+            if(interac == 1){
+                interac = -1;
+                atuacao = novo->chave[i]->jogos;
+            }
+            if(interac != 1 && novo->chave[i]->jogos != atuacao){   
+                break;
+            }
+            resp = TLSETJ_insere(resp, novo->chave[i]);
+        }
+        pos --;
+        //TABM_Libera_no(novo, t);
+    }
+    return resp;
+}
+
+TLSETJ *HL_Atuacao(char *raiz, int t){
+    FILE *arq = fopen("Id_Jogos.bin","rb+");
+    if(!arq)exit(1);
+    
+    int aux, i, pos = -1;
+    Id_Jogos jogador;
+    TLSETJ *resp = NULL;
+    int atuacao = -1, interac = 1;
+
+    while(1){
+        aux = fread(&jogador, sizeof(Id_Jogos), 1, arq);
+        if(aux != 1){
+            break;
+        }
+
+        TABM *novo = TABM_Busca(raiz,jogador.id, t);
+        for(i = 0; i<novo->nchaves; i++){
+            if(novo->chave[i]->id == jogador.id)break;
+        }
+        if(interac == 1){
+            interac = -1;
+            atuacao = novo->chave[i]->jogos;
+        }
+        if(interac != 1 && novo->chave[i]->jogos != atuacao){   
+            break;
+        }
+        resp = TLSETJ_insere(resp, novo->chave[i]);
+            
+        
+        //TABM_Libera_no(novo, t);
+    }
+    atuacao = -1;
+    interac = 1;
+
+    while (1){
+        fseek(arq, pos*sizeof(Id_Jogos), SEEK_END);
+        aux = fread(&jogador, sizeof(Id_Jogos), 1, arq);
+        if(aux != 1){
+            break;
+        }
+
+        TABM *novo = TABM_Busca(raiz,jogador.id, t);
+
+        for(i = 0; i<novo->nchaves; i++){
+            if(novo->chave[i]->id == jogador.id)break;
+        }
+        
+        if(interac == 1){
+            interac = -1;
+            atuacao = novo->chave[i]->jogos;
+        }
+        if(interac != 1 && novo->chave[i]->jogos != atuacao){   
+            break;
+        }
+        resp = TLSETJ_insere(resp, novo->chave[i]);
+        
+        pos --;
+        //TABM_Libera_no(novo, t);
+    }
+    return resp;
+}
+
+//===============Maior e menor selecao===============// Q4
+
+void HL_QtdSelecao(){
+    FILE *arq = fopen("Id_Pais.bin","rb+");
+    if(!arq) exit(1);
+
+    Id_Pais jogador;
+    char maiorSel[40], menorSel[40], atualSel[40];
+    int qtdMaior, qtdMenor, qtdatual;
+    int interac = 1, aux;
+
+    while(1){
+        aux = fread(&jogador, sizeof(Id_Pais), 1, arq);
+        if(aux != 1) break;
+        if(interac == 1){
+            strcpy(maiorSel, jogador.pais);
+            strcpy(menorSel, jogador.pais);
+            strcpy(atualSel, jogador.pais);
+            qtdMaior = 1;
+            qtdMenor = 1000000;
+            qtdatual = 1;
+            interac ++;
+        }else{
+            if(strcmp(atualSel, jogador.pais) == 0){
+                qtdatual ++;
+            }
+            else{ 
+                if(qtdatual <= qtdMenor){
+                    qtdMenor = qtdatual;
+                    strcpy(menorSel, atualSel);
+                }
+                strcpy(atualSel, jogador.pais);
+                qtdatual = 1;
+            }
+        }
+        if(qtdatual > qtdMaior){
+            qtdMaior = qtdatual;
+            strcpy(maiorSel, atualSel);
+        }
+
+    }
+    printf("Menor seleção: %s com %i jogadores\n", menorSel, qtdMenor);
+    printf("Maior seleção: %s com %i jogadores\n", maiorSel, qtdMaior);
+}
+
+//===============Jogadores que atuam dentro/fora da origem===============// Q5 e Q6
+
+
+TLSETJ *Jogadores_AtuamFora(char *raiz, int t){
+    FILE *arq = fopen("Id_Pais.bin","rb+");
+    if(!arq)exit(1);
+
+    Id_Pais id_pais;
+    int aux, i; 
+    TLSETJ *resp = NULL;
+
+    while(1){
+        aux = fread(&id_pais, sizeof(Id_Pais), 1, arq);
+        if(aux != 1)break;
+
+        TABM *novo = TABM_Busca(raiz, id_pais.id, t);
+        for(i = 0; i<novo->nchaves; i++){
+            if(novo->chave[i]->id == id_pais.id)break;
+        }
+        if(strcmp(novo->chave[i]->pais_jogando, id_pais.pais) != 0){
+            resp = TLSETJ_insere(resp, novo->chave[i]);
+        }
+
+        //TABM_Libera_no(novo, t);
+    }
+    return resp;
+    fclose(arq);
+}
+
+
+TLSETJ *Jogadores_AtuamNaOritem(char *raiz, int t){
+    FILE *arq = fopen("Id_Pais.bin","rb+");
+    if(!arq)exit(1);
+    
+    Id_Pais id_pais;
+    int aux, i; 
+    TLSETJ *resp = NULL;
+
+    while(1){
+        aux = fread(&id_pais, sizeof(Id_Pais), 1, arq);
+        if(aux != 1)break;
+
+        TABM *novo = TABM_Busca(raiz, id_pais.id, t);
+        for(i = 0; i<novo->nchaves; i++){
+            if(novo->chave[i]->id == id_pais.id)break;
+        }
+        if(strcmp(novo->chave[i]->pais_jogando, id_pais.pais) == 0){
+            resp = TLSETJ_insere(resp, novo->chave[i]);
+        }
+
+        //TABM_Libera_no(novo, t);
+    }
+    return resp;
+    fclose(arq);
+}
+
+//===============Seleção com mais atuantes dentro/fora origem===============// Q5 e Q6
+
+/*
+(9) Busca da(s) seleção(ções) com mais jogadores que atuam fora do seu país de origem;
+(10) Busca da(s) seleção(ções) com mais jogadores que atuam no seu país de origem;
+*/
+

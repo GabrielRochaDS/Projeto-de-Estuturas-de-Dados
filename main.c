@@ -55,7 +55,7 @@ void preencherJogador(char *arquivo, char *raiz, int t){
     int corrente = 0;
 
     //==============Loop le todo EURO.txt==============//
-    while(1 && i < 11){
+    while(1 && i<5){
         if(TLSE_busca(linhas, i)){
             a = fscanf(fp, "%[^\n]\n", pais);
             if(a!=1)break;
@@ -153,21 +153,58 @@ int main(void){
     // printId_Pais();
     // printf("\n\n");
 
-    //==============TLSETJ funcoes auxiliares==============//
-    
-    // TLSETJ *lista = maisNovo_maisVelhoPosicao(raiz,"MF",t);
+    //==============TLSETJ funcoes auxiliares Idade==============//
+    // TLSETJ *lista = HL_Idade(raiz,t);
+    // TLSETJ *lista = HL_IdadePosicao(raiz,"MF",t);
+    // TLSETJ *lista = HL_IdadeSelecao(raiz,"Germany",t);
     // TLSETJ_imprime(lista);
 
+    //==============TLSETJ funcoes auxiliares Jogos==============//
+    // TLSETJ *lista = HL_AtuacaoSelecao(raiz, "Germany", t);
+    // TLSETJ *lista = HL_Atuacao(raiz, t);
+    // TLSETJ_imprime(lista);
+
+    //==============TLSETJ funcoes auxiliares Seleções==============//
+    // printId_Pais();
+    // HL_QtdSelecao();
+    // TLSETJ *lista = Jogadores_AtuamFora(raiz, t);
+    // TLSETJ *lista = Jogadores_AtuamNaOritem(raiz, t);
+    // TLSETJ_imprime(lista);
 
     //==============Imprimindo ids==============//
     TABM_Imprime_ids(raiz, t);
 
 
+
     //==============Testes Retira==============//
-    // TABM_Retira(raiz, 1, t);
-    TABM_Retira(raiz, 152, t);
-    // TABM_Retira(raiz, 131, t);
-    // TABM_Retira(raiz, 216, t);
+    FILE *teste = fopen(raiz, "rb");
+    if (!fp) exit(1);
+
+    fread(&num, sizeof(int), 1, teste);
+    fclose(fp);
+    
+    char nome_n[10];
+    GeraNome(nome_n, num);
+    TABM *no = leitura(nome_n, t);
+
+    TABM_Imprime_no(no->nome, t);
+
+    TABM_Retira(raiz, 38, t);
+    // // TABM_Retira(raiz, 152, t);
+    TABM_Retira(raiz, 131, t);
+    TABM_Retira(raiz, 216, t);
+
+    FILE *teste2 = fopen(raiz, "rb");
+    if (!fp) exit(1);
+
+    fread(&num, sizeof(int), 1, teste2);
+    fclose(fp);
+    
+    char nome_n2[10];
+    GeraNome(nome_n2, num);
+    TABM *no2 = leitura(nome_n2, t);
+
+    TABM_Imprime_no(no2->nome, t);
 
 
 
