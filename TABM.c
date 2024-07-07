@@ -1,6 +1,9 @@
 #include "TABM.h"
 
 void printJogador(TJ *jogador) {
+    if(!jogador){
+        return;
+    }
     printf("ID: %d\n", jogador->id);
     printf("Nome: %s\n", jogador->nome);
     printf("Camisa: %d\n", jogador->camisa);
@@ -87,7 +90,7 @@ TABM *TABM_Cria(int t){
 
     for(int i = 0; i < (2 * t); i++){
         novo->chave[i] = (TJ *) malloc (sizeof(TJ));
-        novo->chave[i] = NULL;
+        // novo->chave[i] = NULL;
     }
     
     novo->filhos = (int*)malloc(sizeof(int) * 2 * t);
@@ -102,7 +105,7 @@ TABM *busca_aux(TABM *no, int id, int t){
     if (no->folha){
         while (i < no->nchaves && id > no->chave[i]->id) i++;
         if ((i < no->nchaves) && (id == no->chave[i]->id)) return no;
-        //TABM_Libera_no(no, t);
+        TABM_Libera_no(no, t);
         return NULL;
     }
     else while (i < no->nchaves && id >= no->ids[i]) i++;
@@ -110,7 +113,7 @@ TABM *busca_aux(TABM *no, int id, int t){
     char nome_filhoi[10];
     GeraNome(nome_filhoi, no->filhos[i]);
 
-    //TABM_Libera_no(no, t);
+    TABM_Libera_no(no, t);
 
     TABM *no_filhoi = leitura(nome_filhoi, t);
     
@@ -302,14 +305,14 @@ void remover(char *raiz, TABM *a, int id, int t){
     if (a->folha){  //CASO 1 somente ocorre se estivermos na folha;
         for(i = 0; i < a->nchaves && a->chave[i]->id < id; i++);
         if((i < a->nchaves) && (id == a->chave[i]->id)){ //CASO 1
-            printf("\nCASO 1\n");
+            // printf("\nCASO 1\n");
             int j;
             for(j = i; j < a->nchaves-1;j++) a->chave[j] = a->chave[j+1];
             a->nchaves -= 1;
             char novo_nome[10];
             GeraNome(novo_nome, a->nome);
             escrita(novo_nome, a);
-            //TABM_Libera_no(a, t);                         //Liberação do nó não feita
+            // TABM_Libera_no(a, t);                         //Liberação do nó não feita
         }
         return;
     }
@@ -330,7 +333,7 @@ void remover(char *raiz, TABM *a, int id, int t){
                 TABM *zf = leitura(nome_irmaofrente, t);        //Lendo o irmão da direita primeiramente
 
                 if((i < a->nchaves) && (zf->nchaves >= t)){
-                    printf("\nCASO 3A: i menor que nchaves\n"); //Irmão da direita possui chave, caso restritos para nós com i != a->nchaves (filho da borda direita);
+                    // printf("\nCASO 3A: i menor que nchaves\n"); //Irmão da direita possui chave, caso restritos para nós com i != a->nchaves (filho da borda direita);
                     if (!y->folha){
                         y->ids[t-1] = a->ids[i];                //dar a y a chave i da arv
                         a->ids[i] = zf->ids[0];                 //dar a arv uma chave de z
@@ -344,7 +347,6 @@ void remover(char *raiz, TABM *a, int id, int t){
                         for(j = 0; j < zf->nchaves; j++)        //ajustar filhos de z
                             zf->filhos[j] = zf->filhos[j + 1];
                         zf->nchaves -= 1;
-                        printf("Pass2");
 
                         char nome_pai[10];
                         GeraNome(nome_pai, a->nome);
@@ -381,7 +383,7 @@ void remover(char *raiz, TABM *a, int id, int t){
                     }
                 }
 
-                //TABM_Libera_no(zf, t);
+                // TABM_Libera_no(zf, t);
             }
 
             if (i > 0){
@@ -390,9 +392,9 @@ void remover(char *raiz, TABM *a, int id, int t){
                 TABM *zt = leitura(nome_irmaotras, t);
 
                 if((i > 0) && (zt->nchaves >=t)){ //CASO 3A   OLHA IRMÃO ESQUERDA
-                    printf("\n");
-                    printf("\nCASO 3A: i igual a nchaves\n");
-                    printf("\n");
+                    // printf("\n");
+                    // printf("\nCASO 3A: i igual a nchaves\n");
+                    // printf("\n");
 
                     if (!y->folha){
                         int j;
@@ -428,12 +430,12 @@ void remover(char *raiz, TABM *a, int id, int t){
                     escrita(nome_filhoy, y);
                     escrita(nome_irmaotras, zt);
 
-                    //TABM_Libera_no(zt, t);
+                    // TABM_Libera_no(zt, t);
                     
                     remover(raiz, y, id, t);
                     return;
                 }
-                //TABM_Libera_no(zt, t);
+                // TABM_Libera_no(zt, t);
             }
 
             // //CASO 3B
@@ -443,7 +445,7 @@ void remover(char *raiz, TABM *a, int id, int t){
                 TABM *zf = leitura(nome_irmaofrente, t);        //Lendo o irmão da direita primeiramente
 
                 if (zf->nchaves == t-1){
-                    printf("\nCASO 3B: i menor que nchaves\n");
+                    // printf("\nCASO 3B: i menor que nchaves\n");
 
                     if (!y->folha){
                         y->ids[t-1] = a->ids[i];
@@ -494,7 +496,7 @@ void remover(char *raiz, TABM *a, int id, int t){
                         
                         remove(nome_irmaofrente);
                     }
-                    //TABM_Libera_no(zf, t);
+                    // TABM_Libera_no(zf, t);
                     
                     remover(raiz, y, id, t);
                     return;
@@ -507,7 +509,7 @@ void remover(char *raiz, TABM *a, int id, int t){
                 TABM *zt = leitura(nome_irmaotras, t);
 
                 if(zt->nchaves == t-1){
-                    printf("\nCASO 3B: i igual a nchaves\n");
+                    // printf("\nCASO 3B: i igual a nchaves\n");
                     if(!y->folha){
                         if(i == a->nchaves){
                             zt->ids[t-1] = a->ids[i-1]; //pegar chave[i] e poe ao final de filho[i-1]
@@ -535,8 +537,6 @@ void remover(char *raiz, TABM *a, int id, int t){
                         FILE *fpr = fopen(raiz, "wb");
                         if (!fpr) exit(1);
 
-                        printf("Entrou");
-
                         fwrite(&a->filhos[0], sizeof(int), 1, fpr);
                         fclose(fpr);
 
@@ -547,7 +547,7 @@ void remover(char *raiz, TABM *a, int id, int t){
 
                         escrita(nome_irmaotras, zt);
 
-                        //TABM_Libera_no(y, t);
+                        // TABM_Libera_no(y, t);
 
                         remover(raiz, zt, id, t);
                         return;
@@ -561,7 +561,7 @@ void remover(char *raiz, TABM *a, int id, int t){
                         
                         remove(nome_filhoy);
 
-                        //TABM_Libera_no(y, t);
+                        // TABM_Libera_no(y, t);
 
                         remover(raiz, zt, id, t);
                         return;
@@ -591,18 +591,18 @@ void TABM_Retira(char *raiz, int id, int t){
         return;
     }
     
-    // TABM *a = TABM_Busca(raiz, id, t);
-    // if(!a){
-    //     printf("-----------------ERRO-NA-REMOÇÃO-----------------\nJogador não se encontra na árvore.\n");
-    //     return;
-    // }
-    //TABM_Libera_no(a, t);
+    TABM *a = TABM_Busca(raiz, id, t);
+    if(!a){
+        printf("-----------------ERRO-NA-REMOÇÃO-----------------\nJogador não se encontra na árvore.\n");
+        return;
+    }
+    // TABM_Libera_no(a, t);
 
     char nome_primeiro_no[10];
     GeraNome(nome_primeiro_no, num);
     TABM *no = leitura(nome_primeiro_no, t);
     remover(raiz, no, id, t);
-    //TABM_Libera_no(a, t);
+    // TABM_Libera_no(no, t);
 }
 
 
@@ -680,11 +680,11 @@ void TABM_Imprime_no(int num, int t){
     }
 }
 
-// void TABM_Libera_no(TABM *no, int t){
-//     if (!no) return;
-//     for (int i = 0; i < ((2 * t)); i++) free(no->chave[i]);
-//     free(no->chave);
-//     //free(no->ids);
-//     free(no->filhos);
-//     free(no);
-// }
+void TABM_Libera_no(TABM *no, int t){
+    if (!no) return;
+    for (int i = 0; i < ((2 * t)); i++) free(no->chave[i]);
+    free(no->chave);
+    // free(no->ids);
+    // free(no->filhos);
+    // free(no);
+}

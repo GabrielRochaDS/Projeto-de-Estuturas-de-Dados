@@ -175,6 +175,7 @@ void printId_Pais(){
     while(1){
         aux = fread(&id_pais, sizeof(Id_Pais), 1, arq);
         if(aux != 1)break;
+        if(id_pais.id == -1)continue;
         printf("(%i %s) ", id_pais.id, id_pais.pais);
     }
     fclose(arq);
@@ -243,11 +244,14 @@ void removeId_Pais(int id){
 TLSETJ *HL_Idade(char *raiz, int t){
     FILE *arq = fopen("Id_Idade.bin","rb+");
     if(!arq)exit(1);
-    
-    Id_Idade jogador;
+    int aux;
+    Id_Idade jogador, aux2;
     TLSETJ *resp = NULL;
-
-    fread(&jogador, sizeof(Id_Idade), 1, arq);
+    while(1){
+        aux = fread(&jogador, sizeof(Id_Idade), 1, arq);
+        if(aux != 1){ printf("Nao ha jogadores ou leitura nao conseguiu ser feita!");return;}
+        if(jogador.id != -1)break;
+    }
     TABM *novo = TABM_Busca(raiz,jogador.id, t);
 
     int i;
@@ -256,9 +260,15 @@ TLSETJ *HL_Idade(char *raiz, int t){
     }
     resp = TLSETJ_insere(resp, novo->chave[i]);
 
-    //TABM_Libera_no(novo, t);
-
-    fseek(arq, -sizeof(Id_Idade), SEEK_END);
+    i = -1;
+    while(1){
+        aux = fread(&aux2, sizeof(Id_Idade), 1, arq);
+        if(aux != 1) break;
+        if(aux2.id != -1){
+            jogador.id = aux2.id;
+        }
+    }
+    
 
 
     fread(&jogador, sizeof(Id_Idade), 1, arq);
@@ -269,7 +279,6 @@ TLSETJ *HL_Idade(char *raiz, int t){
     }
     resp = TLSETJ_insere(resp, novo->chave[i]);
 
-    //TABM_Libera_no(novo, t);
     return resp;
 }
 
@@ -286,6 +295,7 @@ TLSETJ *HL_IdadePosicao(char *raiz, char *posicao, int t){
         if(aux != 1){
             break;
         }
+        if(jogador.id == -1)continue;
 
         TABM *novo = TABM_Busca(raiz,jogador.id, t);
         for(i = 0; i<novo->nchaves; i++){
@@ -296,7 +306,7 @@ TLSETJ *HL_IdadePosicao(char *raiz, char *posicao, int t){
             resp = TLSETJ_insere(resp, novo->chave[i]);
             break;
         }
-        //TABM_Libera_no(novo, t);
+        TABM_Libera_no(novo, t);
     }
 
     while (1){
@@ -304,6 +314,10 @@ TLSETJ *HL_IdadePosicao(char *raiz, char *posicao, int t){
         aux = fread(&jogador, sizeof(Id_Idade), 1, arq);
         if(aux != 1){
             break;
+        }
+        if(jogador.id == -1){
+            pos --;
+            continue;
         }
 
         TABM *novo = TABM_Busca(raiz,jogador.id, t);
@@ -317,7 +331,7 @@ TLSETJ *HL_IdadePosicao(char *raiz, char *posicao, int t){
             break;
         }
         pos --;
-        //TABM_Libera_no(novo, t);
+        TABM_Libera_no(novo, t);
     }
     return resp;
 }
@@ -332,6 +346,7 @@ TLSETJ *HL_IdadeSelecao(char *raiz, char *selecao, int t){
 
     while(1){
         aux = fread(&jogador, sizeof(Id_Idade), 1, arq);
+        if(jogador.id == -1)continue;
         if(aux != 1){
             break;
         }
@@ -345,14 +360,19 @@ TLSETJ *HL_IdadeSelecao(char *raiz, char *selecao, int t){
             resp = TLSETJ_insere(resp, novo->chave[i]);
             break;
         }
-        //TABM_Libera_no(novo, t);
+        TABM_Libera_no(novo, t);
     }
 
     while (1){
         fseek(arq, pos*sizeof(Id_Idade), SEEK_END);
+        
         aux = fread(&jogador, sizeof(Id_Idade), 1, arq);
         if(aux != 1){
             break;
+        }
+        if(jogador.id == -1){
+            pos --;
+            continue;
         }
 
         TABM *novo = TABM_Busca(raiz,jogador.id, t);
@@ -366,7 +386,7 @@ TLSETJ *HL_IdadeSelecao(char *raiz, char *selecao, int t){
             break;
         }
         pos --;
-        //TABM_Libera_no(novo, t);
+        TABM_Libera_no(novo, t);
     }
     return resp;
 }
@@ -381,13 +401,13 @@ TLSETJ *HL_AtuacaoSelecao(char *raiz, char *selecao, int t){
     int aux, i, pos = -1;
     Id_Jogos jogador;
     TLSETJ *resp = NULL;
-    int atuacao = -1, interac = 1;
 
     while(1){
         aux = fread(&jogador, sizeof(Id_Jogos), 1, arq);
         if(aux != 1){
             break;
         }
+        if(jogador.id == -1)continue;
 
         TABM *novo = TABM_Busca(raiz,jogador.id, t);
         for(i = 0; i<novo->nchaves; i++){
@@ -395,20 +415,12 @@ TLSETJ *HL_AtuacaoSelecao(char *raiz, char *selecao, int t){
         }
 
         if(strcmp(selecao, novo->chave[i]->pais) == 0){
-            if(interac == 1){
-                interac = -1;
-                atuacao = novo->chave[i]->jogos;
-            }
-            if(interac != 1 && novo->chave[i]->jogos != atuacao){   
-                break;
-            }
             resp = TLSETJ_insere(resp, novo->chave[i]);
+            break;
             
         }
-        //TABM_Libera_no(novo, t);
+        TABM_Libera_no(novo, t);
     }
-    atuacao = -1;
-    interac = 1;
 
     while (1){
         fseek(arq, pos*sizeof(Id_Jogos), SEEK_END);
@@ -416,6 +428,10 @@ TLSETJ *HL_AtuacaoSelecao(char *raiz, char *selecao, int t){
         if(aux != 1){
             break;
         }
+        if(jogador.id == -1){
+            pos --;
+            continue;
+            }
 
         TABM *novo = TABM_Busca(raiz,jogador.id, t);
 
@@ -424,17 +440,11 @@ TLSETJ *HL_AtuacaoSelecao(char *raiz, char *selecao, int t){
         }
 
         if(strcmp(selecao, novo->chave[i]->pais) == 0){
-            if(interac == 1){
-                interac = -1;
-                atuacao = novo->chave[i]->jogos;
-            }
-            if(interac != 1 && novo->chave[i]->jogos != atuacao){   
-                break;
-            }
             resp = TLSETJ_insere(resp, novo->chave[i]);
+            break;
         }
         pos --;
-        //TABM_Libera_no(novo, t);
+        TABM_Libera_no(novo, t);
     }
     return resp;
 }
@@ -453,22 +463,16 @@ TLSETJ *HL_Atuacao(char *raiz, int t){
         if(aux != 1){
             break;
         }
+        if(jogador.id == -1)continue;
 
         TABM *novo = TABM_Busca(raiz,jogador.id, t);
         for(i = 0; i<novo->nchaves; i++){
             if(novo->chave[i]->id == jogador.id)break;
         }
-        if(interac == 1){
-            interac = -1;
-            atuacao = novo->chave[i]->jogos;
-        }
-        if(interac != 1 && novo->chave[i]->jogos != atuacao){   
-            break;
-        }
         resp = TLSETJ_insere(resp, novo->chave[i]);
-            
+        break;    
         
-        //TABM_Libera_no(novo, t);
+        TABM_Libera_no(novo, t);
     }
     atuacao = -1;
     interac = 1;
@@ -479,24 +483,21 @@ TLSETJ *HL_Atuacao(char *raiz, int t){
         if(aux != 1){
             break;
         }
+        if(jogador.id == -1){
+            pos --;
+            continue;
+        }
 
         TABM *novo = TABM_Busca(raiz,jogador.id, t);
 
         for(i = 0; i<novo->nchaves; i++){
             if(novo->chave[i]->id == jogador.id)break;
         }
-        
-        if(interac == 1){
-            interac = -1;
-            atuacao = novo->chave[i]->jogos;
-        }
-        if(interac != 1 && novo->chave[i]->jogos != atuacao){   
-            break;
-        }
         resp = TLSETJ_insere(resp, novo->chave[i]);
-        
+        break;
+
         pos --;
-        //TABM_Libera_no(novo, t);
+        TABM_Libera_no(novo, t);
     }
     return resp;
 }
@@ -515,6 +516,7 @@ void HL_QtdSelecao(){
     while(1){
         aux = fread(&jogador, sizeof(Id_Pais), 1, arq);
         if(aux != 1) break;
+        if(jogador.id == -1)continue;
         if(interac == 1){
             strcpy(maiorSel, jogador.pais);
             strcpy(menorSel, jogador.pais);
@@ -560,6 +562,7 @@ TLSETJ *Jogadores_AtuamFora(char *raiz, int t){
     while(1){
         aux = fread(&id_pais, sizeof(Id_Pais), 1, arq);
         if(aux != 1)break;
+        if(id_pais.id == -1)continue;
 
         TABM *novo = TABM_Busca(raiz, id_pais.id, t);
         for(i = 0; i<novo->nchaves; i++){
@@ -569,10 +572,10 @@ TLSETJ *Jogadores_AtuamFora(char *raiz, int t){
             resp = TLSETJ_insere(resp, novo->chave[i]);
         }
 
-        //TABM_Libera_no(novo, t);
+        TABM_Libera_no(novo, t);
     }
-    return resp;
     fclose(arq);
+    return resp;
 }
 
 
@@ -587,6 +590,7 @@ TLSETJ *Jogadores_AtuamNaOritem(char *raiz, int t){
     while(1){
         aux = fread(&id_pais, sizeof(Id_Pais), 1, arq);
         if(aux != 1)break;
+        if(id_pais.id == -1)continue;
 
         TABM *novo = TABM_Busca(raiz, id_pais.id, t);
         for(i = 0; i<novo->nchaves; i++){
@@ -596,13 +600,13 @@ TLSETJ *Jogadores_AtuamNaOritem(char *raiz, int t){
             resp = TLSETJ_insere(resp, novo->chave[i]);
         }
 
-        //TABM_Libera_no(novo, t);
+        TABM_Libera_no(novo, t);
     }
-    return resp;
     fclose(arq);
+    return resp;
 }
 
-//===============Seleção com mais atuantes dentro/fora origem===============// Q5 e Q6               
+//===============Seleção com mais atuantes dentro/fora origem===============// Q9 e Q10               
 //====================================================================================================================================================//
 //Dando erro, alguns dao um a mais e outros um a menos
 
@@ -619,6 +623,7 @@ void PrintSelecoesComMaisFora(char *raiz, int t){
         
         aux = fread(&id_pais, sizeof(Id_Pais), 1, arq);
         if(aux != 1)break;
+        if(id_pais.id == -1)continue;
 
         TABM *novo = TABM_Busca(raiz, id_pais.id, t);
         for(i = 0; i<novo->nchaves; i++){
@@ -634,7 +639,7 @@ void PrintSelecoesComMaisFora(char *raiz, int t){
         }
         if(strcmp(id_pais.pais, atual) != 0){
             qtdAtual = 1;
-            printf("%s", id_pais.pais);
+            // printf("%s", id_pais.pais);
             strcpy(atual, id_pais.pais);
         }else if(strcmp(novo->chave[i]->pais_jogando, id_pais.pais) != 0){
             qtdAtual += 1;
@@ -648,14 +653,14 @@ void PrintSelecoesComMaisFora(char *raiz, int t){
                 qtdMaiorSelec++;
             }
         } 
-        printf("%i\n", qtdAtual);
-        //TABM_Libera_no(novo, t);
+        // printf("%i\n", qtdAtual);
+        TABM_Libera_no(novo, t);
     }
 
     for(i = 0; i < qtdMaiorSelec; i++){
         printf("%s\n", maiorSelec[i]);
     }
-    printf("%d\n", qtdAtual);
+    // printf("%d\n", qtdAtual);
 }
 
 void PrintSelecoesComMaisDentro(char *raiz, int t){
@@ -670,6 +675,7 @@ void PrintSelecoesComMaisDentro(char *raiz, int t){
         
         aux = fread(&id_pais, sizeof(Id_Pais), 1, arq);
         if(aux != 1)break;
+        if(id_pais.id == -1)continue; 
 
         TABM *novo = TABM_Busca(raiz, id_pais.id, t);
         for(i = 0; i<novo->nchaves; i++){
@@ -685,7 +691,7 @@ void PrintSelecoesComMaisDentro(char *raiz, int t){
         }
         if(strcmp(id_pais.pais, atual) != 0){
             qtdAtual = 1;
-            printf("%s", id_pais.pais);
+            // printf("%s", id_pais.pais);
             strcpy(atual, id_pais.pais);
         }else if(strcmp(novo->chave[i]->pais_jogando, id_pais.pais) == 0){
             qtdAtual += 1;
@@ -699,27 +705,409 @@ void PrintSelecoesComMaisDentro(char *raiz, int t){
                 qtdMaiorSelec++;
             }
         } 
-        printf("%i\n", qtdAtual);
-        //TABM_Libera_no(novo, t);
+        // printf("%i\n", qtdAtual);
+        TABM_Libera_no(novo, t);
     }
 
     for(i = 0; i < qtdMaiorSelec; i++){
         printf("%s\n", maiorSelec[i]);
     }
-    printf("%d\n", qtdAtual);
+    // printf("%d\n", qtdAtual);
+}
+
+//===============Busca jogador por id===============// Q11
+
+TJ *BuscaPorId(char *raiz, int t, int id){
+    int i;
+    TABM *no = TABM_Busca(raiz, id, t);
+    if(!no){
+        printf("Jogador nao encontrado\n");
+        TABM_Libera_no(no, t);
+        return NULL;
+    }
+    for(i = 0; i<no->nchaves; i++){
+        if(no->chave[i]->id == id)break;
+    }
+    return no->chave[i];
+    TABM_Libera_no(no, t);                                                              //RRRRRREEEEEEVIIIISSSSSAAAAARRRRRR o libera no
+}
+
+
+//===============Funçao auxiliar===============//
+int isCaptain(char *nome){
+    int len = strlen(nome);
+    if(nome[len -1] == ')')return 1;
+    return 0;
+}
+
+
+//===============Alteração da Informação de um Jogador===============// Q12
+void AlteraJogador(char *raiz, int t){
+    int n;
+    do{
+        printf("Digite o id do jogador que receberá alterações (-1 para sair): ");
+        scanf("%d", &n);
+        if (n <= 0) break;
+        
+        TABM *no_buscado = TABM_Busca(raiz, n, t);
+
+        if (!no_buscado){
+            printf("Jogador não encontrado!\n");
+            continue;
+        }
+
+        int i = 0;
+        while((i < no_buscado->nchaves) && (n > no_buscado->chave[i])) i++;
+
+        TJ *jogador = no_buscado->chave[i];
+
+        printf("Menu de mudanças:\n");
+        printf("Camisa - 1\n");
+        printf("Idade - 2\n");
+        printf("Jogos - 3\n");
+        printf("Gols - 4\n");
+        printf("Posição - 5\n");
+        printf("País jogando - 6\n");
+        printf("Time - 7\n");
+        printf("Capitão - 8\n");
+        printf("Sair - (-1)\n");
+
+        do{
+            int opcao;
+
+            printf("\n");
+            printf("Digite a mudança desejada: ");
+            scanf("%d", &opcao);
+            printf("\n");
+
+            if (opcao == 1){
+                int camisa;
+                printf("Digite a nova camisa do jogador: ");
+                scanf("%d", &camisa);
+                
+                jogador->camisa = camisa;
+            }
+            else if(opcao == 2){
+                int idade;
+                printf("Digite a nova idade do jogador: ");
+                scanf("%d", &idade);
+
+                jogador->idade = idade;
+
+            }
+            else if(opcao == 3){
+                int jogos;
+                printf("Digite a nova quantidade de jogos do jogador: ");
+                scanf("%d", &jogos);
+                
+                jogador->jogos = jogos;
+            }
+            else if(opcao == 4){
+                int gols;
+                printf("Digite a nova quantidade de gols do jogador: ");
+                scanf("%d", &gols);
+                
+                jogador->gols = gols;
+                
+            }
+            else if(opcao == 5){
+                char posicao[3];
+                printf("Digite a nova posição do jogador: ");
+                scanf("%2[^\n]", posicao);
+
+                strcpy(jogador->posicao, posicao);
+            }
+            else if(opcao == 6){
+                char paisjogando[40];
+                printf("Digite o novo país em que o jogador atua: ");
+                scanf("%39[^\n]", paisjogando);
+
+                strcpy(jogador->pais_jogando, paisjogando);
+            }
+            else if(opcao == 7){
+                char time[40];
+                printf("Digite o novo time em que o jogador atua: ");
+                scanf("%39[^\n]", time);
+
+                strcpy(jogador->pais_jogando, time);
+            }
+            else if(opcao == 8){
+                int op;
+                if (isCaptain(jogador->nome)){
+                    printf("O jogador é um capitão, deseja remover este título dele? (1 - SIM, 2 - SAIR)\n");
+                    scanf("%d", &op);
+
+                    if (op == 1){
+                        int len = strlen(jogador->nome);
+                        char aux;
+                        for(int j = 0; j < len; j++){
+                            if (jogador->nome[j] == "("){
+                                jogador->nome[j - 1] = "\0";
+                                break;
+                            }
+                        }
+                    }
+                }
+                else{
+                    printf("O jogador não é um capitão, deseja dar esse título para ele? (1 - SIM, 2 - SAIR)\n");
+                    scanf("%d", &op);
+
+                    if (op == 1){
+                        char captain[12] = " (capitain)";
+                        strcat(jogador->nome, captain);
+                    }
+                }
+            }
+            else{
+                no_buscado->chave[i] = jogador;
+
+                char nome_atual[10];
+                GeraNome(nome_atual, no_buscado->nome);
+
+                escrita(nome_atual, no_buscado);
+                printf("Alterações salvas!\n");
+                TABM_Libera_no(no_buscado, t);
+                break;
+            }
+        }while(1);
+    }while(1);
+}
+
+
+
+//===============Busca jogador por selecao===============// Q13
+
+TLSETJ *BuscaPorSelecao(char *raiz, int t){
+    FILE *arq = fopen("Id_Pais.bin","rb+");
+    if(!arq) exit(1);
+
+    char nome_selecao[40];
+    printf("Digite o nome da seleção a ser buscada: ");
+    scanf("%39[^\n]s", &nome_selecao);
+    TLSETJ *resp = NULL;
+    Id_Pais id_pais;
+    int aux;
+
+    while(1){
+        aux = fread(&id_pais, sizeof(Id_Pais), 1, arq);
+        if (aux != 1) break;
+        if(id_pais.id == -1)continue;
+
+        if (strcmp(nome_selecao, id_pais.pais) == 0){
+            resp = TLSETJ_insere(resp, BuscaPorId(raiz, t, id_pais.id));
+        }
+    }
+    if(!resp)printf("Seleção nao encontrada\n");
+    return resp;
+}
+
+//===============Busca e remoção===============// Q14
+
+void RemoveCaptain(char *raiz, int t){
+    FILE *arq = fopen("Id_Pais.bin","rb+");
+    if(!arq) exit(1);
+
+    Id_Pais id_pais;
+    int aux;
+
+
+    while (1){
+        aux = fread(&id_pais, sizeof(Id_Pais), 1, arq);
+        if (aux != 1) break;
+        if(id_pais.id == -1)continue;
+        TJ *jogador = BuscaPorId(raiz, t, id_pais.id);
+        if(isCaptain(jogador->nome)) {
+            TABM_Retira(raiz, id_pais.id, t);
+            removeId_Idade(id_pais.id);
+            removeId_Jogo(id_pais.id);
+            removeId_Pais(id_pais.id);
+            }
+    }
+    
+}
+
+//===============Busca e remoção===============// Q15.1
+void RemoveIdadeEspecifica(char *raiz, int t){
+    FILE *arq = fopen("Id_Idade.bin","rb+");
+    if(!arq) exit(1);
+
+    Id_Idade id_idade;
+    int aux, idade;
+
+    printf("Digite a idade especifica a ser removida: \n");
+    scanf("%i", &idade);
+
+    while(1){
+        aux = fread(&id_idade, sizeof(Id_Idade), 1, arq);
+        if(aux != 1)break;;
+        if(id_idade.id == -1)continue;
+        if(id_idade.idade == idade){
+            TABM_Retira(raiz, id_idade.id, t);
+            removeId_Idade(id_idade.id);
+            removeId_Jogo(id_idade.id);
+            removeId_Pais(id_idade.id);
+        }
+        if(id_idade.idade > idade)return;
+    }
+    printf("Retirada completa.\n");
+}
+
+//===============Busca e remoção===============// Q15.2
+void RemoveIdadeAcima(char *raiz, int t){
+    FILE *arq = fopen("Id_Idade.bin","rb+");
+    if(!arq) exit(1);
+
+    Id_Idade id_idade;
+    int aux, idade;
+
+    printf("Digite a idade a ser removida (acima da escolhida): \n");
+    scanf("%i", &idade);
+
+    while(1){
+        aux = fread(&id_idade, sizeof(Id_Idade), 1, arq);
+        if(aux != 1)break;;
+        if(id_idade.id == -1)continue;
+        if(id_idade.idade >= idade){
+            TABM_Retira(raiz, id_idade.id, t);
+            removeId_Idade(id_idade.id);
+            removeId_Jogo(id_idade.id);
+            removeId_Pais(id_idade.id);
+        }
+    }
+    printf("Retirada completa.\n");
+    
+}
+
+//===============Retirada de jogadores de uma seleção que atuam num determinado país;===============// Q16
+void RemoveAtuaEmDeterminadoPais(char *raiz, int t){
+    FILE *fp = fopen("Id_Pais.bin", "rb");
+    if (!fp) exit(1);
+    char selecao[40];
+    char pais[40];
+    printf("Digite a seleção: ");
+    scanf("%s", selecao);
+
+    printf("Digite o determinado pais: ");
+    scanf("%s", pais);
+    Id_Pais id_pais;
+    int r;
+
+    while(1){
+        r = fread(&id_pais, sizeof(Id_Pais), 1, fp);
+        if (!r) break;
+        if(id_pais.id == -1)continue;
+        if(strcmp(selecao, id_pais.pais) == 0){
+            TJ *jogador = BuscaPorId(raiz, t, id_pais.id);
+            if(strcmp(pais, jogador->pais_jogando) == 0){
+                TABM_Retira(raiz, id_pais.id, t);
+                removeId_Idade(id_pais.id);
+                removeId_Jogo(id_pais.id);
+                removeId_Pais(id_pais.id);
+            }
+        }
+    }
+}
+
+//===============Retirada de jogadores de uma seleção que não atuam no país de origem===============// Q17
+
+void RemoveNaoAtuaOrigem(char *raiz, int t){
+    FILE *fp = fopen("Id_Pais.bin", "rb");
+    if (!fp) exit(1);
+    char selecao[40];
+    printf("Digite a seleção: ");
+    scanf("%s", selecao);
+    Id_Pais id_pais;
+    int r;
+
+    while(1){
+        r = fread(&id_pais, sizeof(Id_Pais), 1, fp);
+        if (!r) break;
+        if(id_pais.id == -1)continue;
+        if(strcmp(selecao, id_pais.pais) == 0){
+            TJ *jogador = BuscaPorId(raiz, t, id_pais.id);
+            if(strcmp(id_pais.pais, jogador->pais_jogando) != 0){
+                TABM_Retira(raiz, id_pais.id, t);
+                removeId_Idade(id_pais.id);
+                removeId_Jogo(id_pais.id);
+                removeId_Pais(id_pais.id);
+            }
+        }
+    }
+}
+
+//===============Retirada de jogadores de uma seleção atuam no país de origem===============// Q18
+
+void RemoveAtuaOrigem(char *raiz, int t){
+    FILE *fp = fopen("Id_Pais.bin", "rb");
+    if (!fp) exit(1);
+    char selecao[40];
+    printf("Digite a seleção: ");
+    scanf("%s", selecao);
+    Id_Pais id_pais;
+    int r;
+
+    while(1){
+        r = fread(&id_pais, sizeof(Id_Pais), 1, fp);
+        if (!r) break;
+        if(id_pais.id == -1)continue;
+        if(strcmp(selecao, id_pais.pais) == 0){
+            TJ *jogador = BuscaPorId(raiz, t, id_pais.id);
+            if(strcmp(id_pais.pais, jogador->pais_jogando) == 0){
+                TABM_Retira(raiz, id_pais.id, t);
+                removeId_Idade(id_pais.id);
+                removeId_Jogo(id_pais.id);
+                removeId_Pais(id_pais.id);
+            }
+        }
+    }
+}
+
+
+//===============Remoção de todos os jogadores de uma seleção===============// Q19
+void RemoveSelecao (char *raiz, int t){
+    char nome_selecao[40];
+    printf("Digite o nome da seleção a ser removida: ");
+    scanf("%39[^\n]s", nome_selecao);
+
+    FILE *fp = fopen("Id_Pais.bin", "rb");
+    if (!fp) exit(1);
+
+    Id_Pais id_pais;
+    int r;
+
+    while(1){
+        r = fread(&id_pais, sizeof(Id_Pais), 1, fp);
+        if (!r) break;
+
+        if (strcmp(nome_selecao, id_pais.pais) == 0){
+            TABM_Retira(raiz, id_pais.id, t);
+            removeId_Idade(id_pais.id);
+            removeId_Jogo(id_pais.id);
+            removeId_Pais(id_pais.id);
+            printf("Jogador com id %d removido!\n", id_pais.id);
+        }
+    }
+    printf("\n");
+    printf("Seleção %s removida!\n", nome_selecao);    
 }
 
 
 
 
-//===============Remoção de Jogadores dado um conjunto contendo suas chaves primárias===============//
-// void RemoveJogadoresConjunto (char *raiz, int t){
-//     int n;
-//     do{
-//         scanf("%")
-
-//     }while(n > 0);
-// }
+//===============Remoção de Jogadores dado um conjunto contendo suas chaves primárias===============// Q20
+void RemoveJogadoresConjunto (char *raiz, int t){
+    int n;
+    do{
+        printf("Digite o id dos jogadores a serem removidos (-1 para sair): ");
+        scanf("%d", &n);
+        if (n <= 0) break;
+        TABM_Retira(raiz, n, t);
+        removeId_Idade(n);
+        removeId_Jogo(n);
+        removeId_Pais(n);
+        printf("Jogador com id %d removido!\n", n);
+    }while(1);
+}
 
 
 

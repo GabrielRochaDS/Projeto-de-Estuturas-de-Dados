@@ -54,7 +54,7 @@ void preencherJogador(char *arquivo, char *raiz, int t){
     int corrente = 0;
 
     //==============Loop le todo EURO.txt==============//
-    while(1 && i<10){
+    while(1 && i<1000){
         if(TLSE_busca(linhas, i)){
             a = fscanf(fp, "%[^\n]\n", pais);
             if(a!=1)break;
@@ -149,23 +149,31 @@ int main(void){
     // removeId_Idade(1);
     // printId_Idade();
 
-    // printf("\n\n");
+    // // printf("\n\n");
     // printId_Jogos();
-    // removeId_Jogo(1);
+    // removeId_Jogo();
     // printId_Jogos();
 
 
-    // printf("\n\n");
-    printId_Pais();
-    removeId_Pais(1);
-    printId_Pais();
+    // // printf("\n\n");
+    // printId_Pais();
+    // removeId_Pais(1);
+    // printId_Pais();
 
-    printf("\n\n");
+    // printf("\n\n");
+    // printId_Idade();
+    // printId_Pais();
+    //==============TLSETJ funcoes auxiliares remove==============//
+    // RemoveIdadeAcima(raiz, t);
+    // RemoveAtuaOrigem(raiz, t);
+    // printId_Idade();
+    // printId_Pais();
+
 
     //==============TLSETJ funcoes auxiliares Idade==============//
     // TLSETJ *lista = HL_Idade(raiz,t);
     // TLSETJ *lista = HL_IdadePosicao(raiz,"MF",t);
-    // TLSETJ *lista = HL_IdadeSelecao(raiz,"Germany",t);
+    // TLSETJ *lista111 = HL_IdadeSelecao(raiz,"Germany",t);
     // TLSETJ_imprime(lista);
 
     //==============TLSETJ funcoes auxiliares Jogos==============//
@@ -183,9 +191,18 @@ int main(void){
     // PrintSelecoesComMaisDentro(raiz, t);
 
     //==============Imprimindo ids==============//
-    // TABM_Imprime_ids(raiz, t);
+    // printf("\n");
+    // TJ* jogador = BuscaPorId(raiz, t, 16);
+    // printJogador(jogador);
+    // printf("%i\n", isCaptain(jogador->nome));
+    // RemoveCaptain(raiz, t);
+    // jogador = BuscaPorId(raiz, t, 16);
+    // if(jogador)printf("%i\n", isCaptain(jogador->nome));
+    TLSETJ *lista = BuscaPorSelecao(raiz, t);
+    TLSETJ_imprime(lista);
 
-
+    //==============Imprimindo ids==============//
+    // RemoveSelecao(raiz, t);
 
     //==============Testes Retira==============//
     // FILE *teste = fopen(raiz, "rb");
@@ -215,18 +232,17 @@ int main(void){
     // fclose(fp);
     
     // char nome_n2[10];
-    // GeraNome(nome_n2, num);
+    // GeraNome(nome_n2, 1);
     // TABM *no2 = leitura(nome_n2, t);
 
     // TABM_Imprime_no(no2->nome, t);
 
-
-
     //==============Imprime Ids e libera==============//
     // TABM_Imprime_ids(raiz, t);
-    // TABM_Libera_no(resp, t);
+    // printf("%d\n", no2->nchaves);
+    // TABM_Libera_no(no2, t);
 
-
+    // scanf("%d", &num);
 
     return 0;
 }

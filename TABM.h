@@ -38,7 +38,7 @@ void TABM_Insere(char *raiz, TJ *jogador, int t, int *corrente);
 
 void TABM_Libera_no(TABM *no, int t);
 
-// void TABM_Retira(TAB* arv, int k, int t);
+void TABM_Retira(char *raiz, int k, int t);
 
 void TABM_Imprime_no(int num, int t);
 
