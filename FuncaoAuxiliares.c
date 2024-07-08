@@ -918,6 +918,9 @@ void AlteraJogador(char *raiz, int t){
         printf("Capitão - 8\n");
         printf("Sair - (-1)\n");
 
+        int mudou_idade = 0;
+        int mudou_jogos = 0;
+
         do{
             int opcao;
 
@@ -939,6 +942,7 @@ void AlteraJogador(char *raiz, int t){
                 scanf("%d", &idade);
 
                 jogador->idade = idade;
+                mudou_idade = 1;
             }
             else if(opcao == 3){
                 int jogos;
@@ -946,6 +950,7 @@ void AlteraJogador(char *raiz, int t){
                 scanf("%d", &jogos);
                 
                 jogador->jogos = jogos;
+                mudou_jogos = 1;
             }
             else if(opcao == 4){
                 int gols;
@@ -1011,10 +1016,29 @@ void AlteraJogador(char *raiz, int t){
                 escrita(nome_atual, no_buscado);
                 printf("Alterações salvas!\n");
 
+                if (mudou_jogos == 1){
+                    removeId_Jogo(jogador->id);
+                    Id_Jogos *novo = (Id_Jogos *) malloc (sizeof(Id_Jogos));
+                    novo->id = jogador->id;
+                    novo->jogos = jogador->jogos;
+                    insertId_Jogos(novo, 2);
+                    free(novo);
+                }
+                if (mudou_idade == 1){
+                    removeId_Idade(jogador->id);
+                    Id_Idade *novo2 = (Id_Idade *) malloc (sizeof(Id_Idade));
+                    novo2->id = jogador->id;
+                    novo2->idade = jogador->idade;
+                    insertId_Idade(novo2, 2);
+                    free(novo2);
+                }
+
                 printf("\nJogador pós-alterações:\n\n");
                 printJogador(jogador);
                 printf("\n");
 
+                mudou_idade = 0;
+                mudou_jogos = 0;
                 TABM_Libera_no(no_buscado, t);
                 break;
             }

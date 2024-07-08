@@ -60,7 +60,7 @@ TLSE *linhasPais(char *arquivo){
 }
 
 //===================================Le o arquivo e gera a struct Jogador===================================
-void preencherJogador(char *arquivo, char *raiz, int t){
+int preencherJogador(char *arquivo, char *raiz, int t){
     TLSE *linhas = linhasPais(arquivo);
     FILE *fp  = fopen(arquivo, "r");
 
@@ -174,6 +174,7 @@ void preencherJogador(char *arquivo, char *raiz, int t){
 
 
     printf("\n");
+    return corrente;
     
 }
 
@@ -187,11 +188,12 @@ int main(void){
     fclose(fp);
     int t, n;
 
-    printf("Digite o grau 't' da árvore: ");
+    printf("Digite o grau 't' da árvore (grau menor que 2 será setado como 2): ");
     scanf("%d", &t);
+    
+    if (t < 2) t = 2;
 
-    preencherJogador("EURO.txt", raiz, t);
-    int corrente = 240;
+    int corrente = preencherJogador("EURO.txt", raiz, t);
 
     printf("Folhas:\n");
     TABM_Imprime_ids(raiz, t);
@@ -318,9 +320,12 @@ int main(void){
             strcpy(jogadoranomes->ano, novo->data_nasc+(len - 2));
             jogadoranomes->ano[4] = '\0';
 
-            printf("\n%s\n%s\n", jogadoranomes->ano, jogadoranomes->mes);
-
             insertId_AnoMes(jogadoranomes, 2);
+
+            free(jogadoridade);
+            free(jogadorjogos);
+            free(jogadorpais);
+            free(jogadoranomes);
 
             TABM_Insere(raiz, novo, t, &corrente);
             
