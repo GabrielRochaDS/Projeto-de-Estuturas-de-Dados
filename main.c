@@ -283,6 +283,45 @@ int main(void){
             printf("\n");
             printJogador(novo);
             printf("\n");
+
+            Id_Idade *jogadoridade = (Id_Idade *) malloc (sizeof(Id_Idade));
+            Id_Jogos *jogadorjogos = (Id_Jogos *) malloc (sizeof(Id_Jogos));
+            Id_Pais *jogadorpais = (Id_Pais *) malloc (sizeof(Id_Pais));
+            Id_AnoMes *jogadoranomes = (Id_AnoMes *) malloc (sizeof(Id_AnoMes));
+
+            jogadoridade->id = novo->id;
+            jogadoridade->idade = novo->idade;
+            insertId_Idade(jogadoridade, 2);
+            
+            jogadorjogos->id = novo->id;
+            jogadorjogos->jogos = novo->jogos;
+            insertId_Jogos(jogadorjogos, 2);
+            
+            jogadorpais->id = novo->id;
+            strcpy(jogadorpais->pais, novo->pais);
+            insertId_Pais(jogadorpais, 2);
+
+            jogadoranomes->id = novo->id;
+            int len = strlen(novo->data_nasc) - 2;
+
+            int g, inicio_mes = -1, fim_mes = 0;
+            for(g = 0; g < len ; g++){
+                if (novo->data_nasc[g] == ' '){
+                    if (inicio_mes == -1) inicio_mes = g;
+                    else fim_mes = g;
+                }
+
+            }
+
+            strncpy(jogadoranomes->mes, novo->data_nasc+(inicio_mes+1), fim_mes - inicio_mes - 1);
+            jogadoranomes->mes[fim_mes - inicio_mes - 1] = '\0';
+            strcpy(jogadoranomes->ano, novo->data_nasc+(len - 2));
+            jogadoranomes->ano[4] = '\0';
+
+            printf("\n%s\n%s\n", jogadoranomes->ano, jogadoranomes->mes);
+
+            insertId_AnoMes(jogadoranomes, 2);
+
             TABM_Insere(raiz, novo, t, &corrente);
             
         }
