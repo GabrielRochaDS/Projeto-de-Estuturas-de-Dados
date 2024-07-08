@@ -1,7 +1,32 @@
 //#include "TABM.c"   
 #include "FuncaoAuxiliares.c"
 
-
+void MenuBusca(){
+    printf("\n");
+    printf("======================================================================================================================");
+    printf("\n");
+    printf("Menu da funções de busca da árvore:\n");
+    printf("\n");
+    printf("Busca de um jogador por ID - 1\n");
+    printf("Jogador mais novo e mais velho da competição - 2\n");
+    printf("Jogador mais novo e mais velho por seleção - 3\n");
+    printf("Jogador mais novo e mais velho por posição - 4\n");
+    printf("Jogadores que mais e menos atuaram por equipe - 5\n");
+    printf("Jogadores que mais e menos atuaram na competição: - 6\n");
+    printf("Menor e maior seleção da competição - 7\n");
+    printf("Jogares que atuam fora do seu país de origem - 8\n");
+    printf("Jogadores que atuam no seu país de origem - 9\n");
+    printf("Jogadores que nasceram no mesmo ano - 10\n");
+    printf("Jogadores que nasceram no mesmo mês - 11\n");
+    printf("Seleção com mais jogadores que atuam fora do seu país de origem - 12\n");
+    printf("Seleção com mais jogadores que atuam no seus país de origem - 13\n");
+    printf("Todos os jogadores de uma seleção - 14\n");
+    printf("Todos os jogadores que são capitães - 15\n");
+    printf("Sair - (-1)\n");
+    printf("\n");
+    printf("======================================================================================================================\n");
+    printf("\n");
+}
 
 //===================================Boolean para ver se uma string é pais===================================
 int pais(char *nome){
@@ -132,117 +157,318 @@ void preencherJogador(char *arquivo, char *raiz, int t){
 }
 
 int main(void){
-    
-    //==============Criando a raiz==============//
-    char raiz[10] = "raiz.bin";
+
+    char raiz[9] = "raiz.bin";
     FILE *fp = fopen(raiz, "wb");
+    if (!fp) exit(1);
     int num = -1;
     fwrite(&num, sizeof(int), 1, fp);
     fclose(fp);
-    int t = 2;
+    int t, n;
 
-    //==============Preenchendo os jogadores==============//
+    printf("Digite o grau 't' da árvore: ");
+    scanf("%d", &t);
+
     preencherJogador("EURO.txt", raiz, t);
+    int corrente = 240;
 
-    //==============Print Funcoes auxiliares==============//
-    // printId_Idade();
-    // removeId_Idade(1);
-    // printId_Idade();
+    printf("Folhas:\n");
+    TABM_Imprime_ids(raiz, t);
 
-    // // printf("\n\n");
-    // printId_Jogos();
-    // removeId_Jogo();
-    // printId_Jogos();
+    do{
+        printf("\n");
+        printf("======================================================================================================================");
+        printf("\n");
+        printf("Menu da Árvore criada com os jogadores presentes em 'EURO.txt':\n");
+        printf("\n");
+        printf("Inserção de um novo jogador - 1\n");
+        printf("Funções de busca - 2\n");
+        printf("Funções de remoção - 3\n");
+        printf("Alteração de um jogador - 4\n");
+        printf("Sair - (-1)\n");
+        printf("\n");
+        printf("======================================================================================================================\n");
+        printf("\n");
 
+        printf("Digite o número da opção desejada do menu principal: ");
+        scanf("%d", &n);
+        printf("\n");
+        
+        if (n == 1){
+            TJ *novo = (TJ*) malloc (sizeof(TJ));
 
-    // // printf("\n\n");
-    // printId_Pais();
-    // removeId_Pais(1);
-    // printId_Pais();
+            printf("Id do jogador: ");
+            int num;
+            scanf("%d", &num);
+            novo->id = num;
 
-    // printf("\n\n");
-    // printId_Idade();
-    // printId_Pais();
-    //==============TLSETJ funcoes auxiliares remove==============//
-    // RemoveIdadeAcima(raiz, t);
-    // RemoveAtuaOrigem(raiz, t);
-    // printId_Idade();
-    // printId_Pais();
+            TABM *verifica = TABM_Busca(raiz, num, t);
+            if (verifica){
+                printf("\nJogador já se encontra na árvore!\n");
+                TABM_Libera_no(verifica, t);
+                free(novo);
+            }
 
+            printf("Nome do jogador: ");
+            char nome[40];
+            scanf(" %[^\n]", nome);
+            strcpy(novo->nome, nome);
 
-    //==============TLSETJ funcoes auxiliares Idade==============//
-    // TLSETJ *lista = HL_Idade(raiz,t);
-    // TLSETJ *lista = HL_IdadePosicao(raiz,"MF",t);
-    // TLSETJ *lista111 = HL_IdadeSelecao(raiz,"Germany",t);
-    // TLSETJ_imprime(lista);
+            printf("Camisa do jogador: ");
+            int camisa;
+            scanf("%d", &camisa);
+            novo->camisa = camisa;
 
-    //==============TLSETJ funcoes auxiliares Jogos==============//
-    // TLSETJ *lista = HL_AtuacaoSelecao(raiz, "Germany", t);
-    // TLSETJ *lista = HL_Atuacao(raiz, t);
-    // TLSETJ_imprime(lista);
+            printf("Idade do jogador: ");
+            int idade;
+            scanf("%d", &idade);
+            novo->idade = idade;
 
-    //==============TLSETJ funcoes auxiliares Seleções==============//
-    // printId_Pais();
-    // HL_QtdSelecao();
-    // TLSETJ *lista = Jogadores_AtuamFora(raiz, t);
-    // TLSETJ *lista = Jogadores_AtuamNaOritem(raiz, t);
-    // TLSETJ_imprime(lista);
-    // PrintSelecoesComMaisFora(raiz, t);
-    // PrintSelecoesComMaisDentro(raiz, t);
+            printf("Quantidade de jogos do jogador: ");
+            int jogos;
+            scanf("%d", &jogos);
+            novo->jogos = jogos;
 
-    //==============Imprimindo ids==============//
-    // printf("\n");
-    // TJ* jogador = BuscaPorId(raiz, t, 16);
-    // printJogador(jogador);
-    // printf("%i\n", isCaptain(jogador->nome));
-    // RemoveCaptain(raiz, t);
-    // jogador = BuscaPorId(raiz, t, 16);
-    // if(jogador)printf("%i\n", isCaptain(jogador->nome));
-    TLSETJ *lista = BuscaPorSelecao(raiz, t);
-    TLSETJ_imprime(lista);
+            printf("Quantidade de gols do jogador: ");
+            int gols;
+            scanf("%d", &gols);
+            novo->gols = gols;
 
-    //==============Imprimindo ids==============//
-    // RemoveSelecao(raiz, t);
+            printf("Posição do jogador: ");
+            char posicao[3];
+            scanf(" %[^\n]", posicao);
+            strcpy(novo->posicao, posicao);
 
-    //==============Testes Retira==============//
-    // FILE *teste = fopen(raiz, "rb");
-    // if (!fp) exit(1);
+            printf("Data de nascimento do jogador (Formato - dia mês por extenso ano): ");
+            char data_nasc[40];
+            scanf(" %[^\n]", data_nasc);
+            strcpy(novo->data_nasc, data_nasc);
 
-    // fread(&num, sizeof(int), 1, teste);
-    // fclose(fp);
-    
-    // char nome_n[10];
-    // GeraNome(nome_n, num);
-    // TABM *no = leitura(nome_n, t);
+            printf("País de origem do jogador: ");
+            char pais[40];
+            scanf(" %[^\n]", pais);
+            strcpy(novo->pais, pais);
 
-    // TABM_Imprime_no(no->nome, t);
+            printf("Pais em que o jogador atua: ");
+            char pais_jogando[40];
+            scanf(" %[^\n]", pais_jogando);
+            strcpy(novo->pais_jogando, pais_jogando);
 
-    // // TABM_Retira(raiz, 38, t);
-    // TABM_Retira(raiz, 194, t);
-    // TABM_Retira(raiz, 216, t);
-    // TABM_Retira(raiz, 267, t);
-    // TABM_Retira(raiz, 63, t);
-    // // TABM_Retira(raiz, 131, t);
-    // // TABM_Retira(raiz, 1, t);
+            printf("Time em que o jogador atua: ");
+            char time[40];
+            scanf(" %[^\n]", time);
+            strcpy(novo->time, time);
 
-    // FILE *teste2 = fopen(raiz, "rb");
-    // if (!fp) exit(1);
+            printf("\n");
+            printJogador(novo);
+            printf("\n");
+            TABM_Insere(raiz, novo, t, &corrente);
+            
+        }
+        else if(n == 2){
+            int n2;
 
-    // fread(&num, sizeof(int), 1, teste2);
-    // fclose(fp);
-    
-    // char nome_n2[10];
-    // GeraNome(nome_n2, 1);
-    // TABM *no2 = leitura(nome_n2, t);
+            MenuBusca();
 
-    // TABM_Imprime_no(no2->nome, t);
+            do{
+                printf("Digite o número da opção desejada do menu de busca (-2 para rever o menu): ");
+                scanf("%d", &n2);
+                printf("\n");
 
-    //==============Imprime Ids e libera==============//
-    // TABM_Imprime_ids(raiz, t);
-    // printf("%d\n", no2->nchaves);
-    // TABM_Libera_no(no2, t);
+                if (n2 == 1){
+                    printf("Digite o ID do jogador buscado: ");
+                    int id;
+                    scanf("%d", &id);
+                    TJ *jogador = BuscaPorId(raiz, t, id);
+                    printf("\n");
+                    printf("Informações do jogador buscado:");
+                    printf("\n");
+                    printJogador(jogador);
+                    printf("\n");
+                    free(jogador);
+                }
+                else if(n2 == 2){
+                    TLSETJ *hlidade = HL_Idade(raiz, t);
+                    printf("\n");
+                    printf("Jogadores com maior e menor idade na competição:\n\n");
+                    TLSETJ_imprime(hlidade);
+                    TLSETJ_libera(hlidade);
+                }
+                else if(n2 == 3){  //SCANF
+                    printf("Digite a seleção dos jogadores a serem buscados: ");
+                    char selecao[40];
+                    scanf(" %[^\n]", selecao);
+                    TLSETJ *hlidadeselecao = HL_IdadeSelecao(raiz, selecao, t);
+                    printf("\n");
+                    printf("Jogadores com maior e menor idade na seleção %39s:\n\n", selecao);
+                    TLSETJ_imprime(hlidadeselecao);
+                    TLSETJ_libera(hlidadeselecao);
+                }
+                else if(n2 == 4){ //SCANF
+                    printf("Digite a posição dos jogadores a serem buscados: ");
+                    char posicao[3];
+                    scanf(" %s", posicao);
+                    TLSETJ *hlidadeposicao = HL_IdadePosicao(raiz, posicao, t);
+                    printf("\n");
+                    printf("Jogadores com maior e menor idade na posição %s:\n\n", posicao);
+                    TLSETJ_imprime(hlidadeposicao);
+                    TLSETJ_libera(hlidadeposicao);
+                }
+                else if(n2 == 5){ //SCANF
+                    printf("Digite a seleção dos jogadores que mais atuaram a serem buscados: ");
+                    char selecao[40];
+                    scanf(" %[^\n]", selecao);
+                    printf("Passou");
+                    TLSETJ *hlatuacaoselecao = HL_AtuacaoSelecao(raiz, selecao, t);
+                    printf("\n");
+                    printf("Jogadores que mais atuaram na seleção %s:\n\n", selecao);
+                    TLSETJ_imprime(hlatuacaoselecao);
+                    TLSETJ_libera(hlatuacaoselecao);
+                }
+                else if(n2 == 6){
+                    TLSETJ *hlatuacao = HL_Atuacao(raiz, t);
+                    printf("\n");
+                    printf("Jogadores que mais e menos atuaram na competição:\n\n");
+                    TLSETJ_imprime(hlatuacao);
+                    TLSETJ_libera(hlatuacao);
+                }
+                else if(n2 == 7){   //IMPRIMINDO ESTRANHO
+                    HL_QtdSelecao();
+                }
+                else if(n2 == 8){     //PROBLEMA
+                    TLSETJ *jogadoresfora = Jogadores_AtuamFora(raiz, t);
+                    printf("\n");
+                    printf("Jogadores que atuam fora do seu país de origem:\n\n");
+                    TLSETJ_imprime(jogadoresfora);
+                    TLSETJ_libera(jogadoresfora);
+                }
+                else if(n2 == 9){ //PROBLEMA
+                    TLSETJ *jogadoresdentro = Jogadores_AtuamNaOrigem(raiz, t);
+                    printf("\n");
+                    printf("Jogadores que atuam no seu país de origem:\n\n");
+                    TLSETJ_imprime(jogadoresdentro);
+                    TLSETJ_libera(jogadoresdentro);
+                }
+                else if(n2 == 10){
+                    printf("Digite o ano de nascimento dos jogadores a serem buscados: ");
+                    char ano[5];
+                    scanf(" %s", ano);
+                    //TLSETJ *jogadoresano = JogadoresNasceramMesmoAno(raiz, t, ano);
+                    printf("\n");
+                    printf("Jogadores que nasceram no ano de %s:\n\n", ano);
+                    //TLSETJ_imprime(jogadoresano);
+                    //TLSETJ_libera(jogadoresano);
+                }
+                else if(n2 == 11){ //LIBERANDO ERRADO
+                    printf("Digite o mês de nascimento dos jogadores a serem buscados: ");
+                    char mes[15];
+                    scanf(" %s", mes);
+                    //TLSETJ *jogadoresmes = JogadoresNasceramMesmoMes(raiz, t, mes);
+                    printf("\n");
+                    printf("Jogadores que nasceram no mês de %s:\n\n", mes);
+                    //TLSETJ_imprime(jogadoresmes);
+                    //TLSETJ_libera(jogadoresmes);
+                }
+                else if(n2 == 12){
+                    //VERIFICAR SE IMPRIME MENOR TAMBÉM
+                    printf("\n");
+                    printf("Seleção com mais e menos jogadores jogando fora do país de origem, respectivamente:\n\n");
+                    PrintSelecoesComMaisFora(raiz, t);
+                }
+                else if(n2 == 13){
+                    //VERIFICAR SE IMPRIME MENOR TAMBÉM
+                    printf("\n");
+                    printf("Seleção com mais e menos jogadores jogando em seu país de origem, respectivamente:\n\n");
+                    PrintSelecoesComMaisDentro(raiz, t);
+                }
+                else if(n2 == 14){
+                    TLSETJ *jogadoresselecao = BuscaPorSelecao(raiz, t);
+                    printf("\n");
+                    printf("Jogadores da seleção escolhida:\n\n");
+                    TLSETJ_imprime(jogadoresselecao);
+                    //TLSETJ_libera(jogadoresselecao);
+                }
+                else if(n2 == 15){
+                    
+                }
+                else if(n2 == -2){
+                    MenuBusca();
+                }
+                else break;
+            }while(1);
+        }
+        else if(n == 3){
+            int n3;
+            do{
+                printf("\n");
+                printf("======================================================================================================================");
+                printf("\n");
+                printf("Menu da funções de remoção da árvore:\n");
+                printf("\n");
+                printf("Remoção de jogadores por ID - 1\n");
+                printf("Remoção de jogadores de uma determinada idade - 2\n");
+                printf("Remoção de jogadores a partir de uma determinada idade para acima dela - 3\n");
+                printf("Retirada de todos os jogadores de uma seleção que atuam num determinado país - 4\n");
+                printf("Retirada de todos os os jogadores de uma seleção que não atuam no país de origem - 5\n");
+                printf("Retirada de todos os os jogadores de uma seleção atuam no país de origem - 6\n");
+                printf("Retirada de todos os os jogadores de uma seleção - 7\n");
+                printf("Remoção de todos os capitães - 8\n");
+                printf("Sair - (-1)\n");
+                printf("\n");
+                printf("======================================================================================================================\n");
+                printf("\n");
 
-    // scanf("%d", &num);
+                printf("Digite o número da opção desejada do menu de remoção: ");
+                scanf("%d", &n3);
+                printf("\n");
+
+                if (n3 == 1){
+                    RemoveJogadoresConjunto(raiz, t);
+                }
+                else if (n3 == 2){
+                    RemoveIdadeEspecifica(raiz, t);
+                    printf("\n");
+                    printf("Idades Atualizadas:\n\n");
+                    printId_Idade();
+                }
+                else if (n3 == 3){  //PROBLEMA REMOÇÃO
+                    RemoveIdadeAcima(raiz, t);
+                    printf("\n");
+                    printf("Idades Atualizadas:\n\n");
+                    printId_Idade();
+                }
+                else if (n3 == 4){
+                    RemoveAtuaEmDeterminadoPais(raiz, t);
+                    printf("Id e Países após remoção:\n\n");
+                    printId_Pais();
+                }
+                else if (n3 == 5){
+                    RemoveNaoAtuaOrigem(raiz, t);
+                    printf("Id e Países após remoção:\n\n");
+                    printId_Pais();
+                }
+                else if (n3 == 6){
+                    RemoveAtuaOrigem(raiz, t);
+                    printf("Id e Países após remoção:\n\n");
+                    printId_Pais();
+                }
+                else if (n3 == 7){  //PROBLEMA SCANF
+                    RemoveSelecao(raiz, t);
+                    printf("Id e Países após remoção:\n\n");
+                    printId_Pais();
+                }
+                else if (n3 == 8){  //
+                    RemoveCaptain(raiz, t);
+                }
+                else break;
+            }while(1);
+        }
+        else if(n == 4){
+            AlteraJogador(raiz, t);
+        }
+        else break;
+    }while(1);
+
 
     return 0;
 }
