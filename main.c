@@ -358,9 +358,9 @@ int main(void){
                     printf("\n");
                     printf("Jogadores com maior e menor idade na competição:\n\n");
                     TLSETJ_imprime(hlidade);
-                    TLSETJ_libera(hlidade);
+                    //TLSETJ_libera(hlidade);
                 }
-                else if(n2 == 3){  //SCANF
+                else if(n2 == 3){
                     printf("Digite a seleção dos jogadores a serem buscados: ");
                     char selecao[40];
                     scanf(" %[^\n]", selecao);
@@ -368,7 +368,7 @@ int main(void){
                     printf("\n");
                     printf("Jogadores com maior e menor idade na seleção %39s:\n\n", selecao);
                     TLSETJ_imprime(hlidadeselecao);
-                    TLSETJ_libera(hlidadeselecao);
+                    //TLSETJ_libera(hlidadeselecao);
                 }
                 else if(n2 == 4){
                     printf("Digite a posição dos jogadores a serem buscados: ");
@@ -378,7 +378,7 @@ int main(void){
                     printf("\n");
                     printf("Jogadores com maior e menor idade na posição %s:\n\n", posicao);
                     TLSETJ_imprime(hlidadeposicao);
-                    TLSETJ_libera(hlidadeposicao);
+                    //TLSETJ_libera(hlidadeposicao);
                 }
                 else if(n2 == 5){
                     printf("Digite a seleção dos jogadores que mais atuaram a serem buscados: ");
@@ -389,14 +389,14 @@ int main(void){
                     printf("\n");
                     printf("Jogadores que mais atuaram na seleção %s:\n\n", selecao);
                     TLSETJ_imprime(hlatuacaoselecao);
-                    TLSETJ_libera(hlatuacaoselecao);
+                    //TLSETJ_libera(hlatuacaoselecao);
                 }
                 else if(n2 == 6){
                     TLSETJ *hlatuacao = HL_Atuacao(raiz, t);
                     printf("\n");
                     printf("Jogadores que mais e menos atuaram na competição:\n\n");
                     TLSETJ_imprime(hlatuacao);
-                    TLSETJ_libera(hlatuacao);
+                    //TLSETJ_libera(hlatuacao);
                 }
                 else if(n2 == 7){
                     HL_QtdSelecao();
@@ -406,14 +406,14 @@ int main(void){
                     printf("\n");
                     printf("Jogadores que atuam fora do seu país de origem:\n\n");
                     TLSETJ_imprime(jogadoresfora);
-                    TLSETJ_libera(jogadoresfora);
+                    //TLSETJ_libera(jogadoresfora);
                 }
                 else if(n2 == 9){
                     TLSETJ *jogadoresdentro = Jogadores_AtuamNaOrigem(raiz, t);
                     printf("\n");
                     printf("Jogadores que atuam no seu país de origem:\n\n");
                     TLSETJ_imprime(jogadoresdentro);
-                    TLSETJ_libera(jogadoresdentro);
+                    //TLSETJ_libera(jogadoresdentro);
                 }
                 else if(n2 == 10){
                     printf("Digite o ano de nascimento dos jogadores a serem buscados: ");
@@ -436,13 +436,11 @@ int main(void){
                     //TLSETJ_libera(jogadoresmes);
                 }
                 else if(n2 == 12){
-                    //VERIFICAR SE IMPRIME MENOR TAMBÉM
                     printf("\n");
                     printf("Seleção com mais jogadores jogando fora do país de origem:\n\n");
                     PrintSelecoesComMaisFora(raiz, t);
                 }
                 else if(n2 == 13){
-                    //VERIFICAR SE IMPRIME MENOR TAMBÉM
                     printf("\n");
                     printf("Seleção com mais jogadores jogando em seu país de origem:\n\n");
                     PrintSelecoesComMaisDentro(raiz, t);
@@ -455,7 +453,10 @@ int main(void){
                     //TLSETJ_libera(jogadoresselecao);
                 }
                 else if(n2 == 15){
-                    
+                    TLSETJ *captains = BuscaCaptain(raiz, t);
+                    printf("\nCapitães da Seleção:\n\n");
+                    TLSETJ_imprime(captains);
+                    //TLSETJ_libera(captains);
                 }
                 else if(n2 == -2){
                     MenuBusca();

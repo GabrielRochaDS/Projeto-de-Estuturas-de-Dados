@@ -500,7 +500,7 @@ TLSETJ *HL_AtuacaoSelecao(char *raiz, char *selecao, int t){
             break;
             
         }
-        TABM_Libera_no(novo, t);
+        //TABM_Libera_no(novo, t);
     }
 
     while (1){
@@ -525,7 +525,7 @@ TLSETJ *HL_AtuacaoSelecao(char *raiz, char *selecao, int t){
             break;
         }
         pos --;
-        TABM_Libera_no(novo, t);
+        //TABM_Libera_no(novo, t);
     }
     return resp;
 }
@@ -553,7 +553,7 @@ TLSETJ *HL_Atuacao(char *raiz, int t){
         resp = TLSETJ_insere(resp, novo->chave[i]);
         break;    
         
-        TABM_Libera_no(novo, t);
+        //TABM_Libera_no(novo, t);
     }
     atuacao = -1;
     interac = 1;
@@ -578,7 +578,7 @@ TLSETJ *HL_Atuacao(char *raiz, int t){
         break;
 
         pos --;
-        TABM_Libera_no(novo, t);
+        //TABM_Libera_no(novo, t);
     }
     return resp;
 }
@@ -654,7 +654,7 @@ TLSETJ *Jogadores_AtuamFora(char *raiz, int t){
             continue;
         }
 
-        TABM_Libera_no(novo, t);
+        //TABM_Libera_no(novo, t);
     }
     fclose(arq);
     return resp;
@@ -683,7 +683,7 @@ TLSETJ *Jogadores_AtuamNaOrigem(char *raiz, int t){
             continue;
         }
 
-        TABM_Libera_no(novo, t);
+        //TABM_Libera_no(novo, t);
     }
     fclose(arq);
     return resp;
@@ -1077,6 +1077,30 @@ TLSETJ *BuscaPorSelecao(char *raiz, int t){
 }
 
 //===============Busca e remoção===============// Q14
+
+TLSETJ *BuscaCaptain(char *raiz, int t){
+    FILE *fp = fopen("Id_Pais.bin", "rb+");
+    if (!fp) exit (1);
+
+    Id_Pais id_pais;
+    int aux;
+
+    TLSETJ *resp = NULL;
+
+    while (1){
+        aux = fread(&id_pais, sizeof(Id_Pais), 1, fp);
+        if (aux != 1) break;
+
+        if (id_pais.id == -1) continue;
+        TJ *jogador = BuscaPorId(raiz, t, id_pais.id);
+        if (isCaptain(jogador->nome)){
+            resp = TLSETJ_insere(resp, jogador);
+        }
+        else free(jogador);
+    }
+
+    return resp;
+}
 
 void RemoveCaptain(char *raiz, int t){
     FILE *arq = fopen("Id_Pais.bin","rb+");
