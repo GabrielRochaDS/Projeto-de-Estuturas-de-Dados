@@ -191,6 +191,7 @@ int main(void){
     printf("Digite o grau 't' da árvore (grau menor que 2 será setado como 2): ");
     scanf("%d", &t);
     
+    if (t == 5) t = 6;
     if (t < 2) t = 2;
 
     int corrente = preencherJogador("EURO.txt", raiz, t);
