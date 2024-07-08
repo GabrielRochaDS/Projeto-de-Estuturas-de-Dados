@@ -68,6 +68,7 @@ void preencherJogador(char *arquivo, char *raiz, int t){
     Id_Idade *idIdade = (Id_Idade *) malloc (sizeof(Id_Idade));
     Id_Jogos *idJogos = (Id_Jogos *) malloc (sizeof(Id_Jogos));
     Id_Pais *idPais = (Id_Pais *) malloc (sizeof(Id_Pais));
+    Id_AnoMes *idAnoMes = (Id_AnoMes *) malloc (sizeof(Id_AnoMes));
 
     
     
@@ -144,12 +145,32 @@ void preencherJogador(char *arquivo, char *raiz, int t){
             strcpy(idPais->pais, jogador.pais);
             insertId_Pais(idPais, i);
 
+            idAnoMes->id = jogador.id;
+            int len = strlen(jogador.data_nasc) - 2;
+
+            int h, inicio_mes = -1, fim_mes = 0;
+            for(h = 0; h < len ; h++){
+                if (jogador.data_nasc[h] == ' '){
+                    if (inicio_mes == -1) inicio_mes = h;
+                    else fim_mes = h;
+                }
+                
+            }
+
+            strncpy(idAnoMes->mes, jogador.data_nasc+(inicio_mes+1), fim_mes - inicio_mes - 1);
+            idAnoMes->mes[fim_mes - inicio_mes - 1] = '\0';
+            strcpy(idAnoMes->ano, jogador.data_nasc+(len - 3));
+            idAnoMes->ano[4] = '\0';
+
+            insertId_AnoMes(idAnoMes, i);
+
         }
         i++;
     }
     free(idIdade);
     free(idJogos);
     free(idPais);
+    free(idAnoMes);
 
 
     printf("\n");
@@ -304,7 +325,7 @@ int main(void){
                     TLSETJ_imprime(hlidadeselecao);
                     TLSETJ_libera(hlidadeselecao);
                 }
-                else if(n2 == 4){ //SCANF
+                else if(n2 == 4){
                     printf("Digite a posição dos jogadores a serem buscados: ");
                     char posicao[3];
                     scanf(" %s", posicao);
@@ -314,7 +335,7 @@ int main(void){
                     TLSETJ_imprime(hlidadeposicao);
                     TLSETJ_libera(hlidadeposicao);
                 }
-                else if(n2 == 5){ //SCANF
+                else if(n2 == 5){
                     printf("Digite a seleção dos jogadores que mais atuaram a serem buscados: ");
                     char selecao[40];
                     scanf(" %[^\n]", selecao);
@@ -332,17 +353,17 @@ int main(void){
                     TLSETJ_imprime(hlatuacao);
                     TLSETJ_libera(hlatuacao);
                 }
-                else if(n2 == 7){   //IMPRIMINDO ESTRANHO
+                else if(n2 == 7){
                     HL_QtdSelecao();
                 }
-                else if(n2 == 8){     //PROBLEMA
+                else if(n2 == 8){
                     TLSETJ *jogadoresfora = Jogadores_AtuamFora(raiz, t);
                     printf("\n");
                     printf("Jogadores que atuam fora do seu país de origem:\n\n");
                     TLSETJ_imprime(jogadoresfora);
                     TLSETJ_libera(jogadoresfora);
                 }
-                else if(n2 == 9){ //PROBLEMA
+                else if(n2 == 9){
                     TLSETJ *jogadoresdentro = Jogadores_AtuamNaOrigem(raiz, t);
                     printf("\n");
                     printf("Jogadores que atuam no seu país de origem:\n\n");
@@ -353,32 +374,32 @@ int main(void){
                     printf("Digite o ano de nascimento dos jogadores a serem buscados: ");
                     char ano[5];
                     scanf(" %s", ano);
-                    //TLSETJ *jogadoresano = JogadoresNasceramMesmoAno(raiz, t, ano);
+                    TLSETJ *jogadoresano = JogadoresNasceramMesmoAno(raiz, t, ano);
                     printf("\n");
                     printf("Jogadores que nasceram no ano de %s:\n\n", ano);
-                    //TLSETJ_imprime(jogadoresano);
+                    TLSETJ_imprime(jogadoresano);
                     //TLSETJ_libera(jogadoresano);
                 }
                 else if(n2 == 11){ //LIBERANDO ERRADO
                     printf("Digite o mês de nascimento dos jogadores a serem buscados: ");
                     char mes[15];
                     scanf(" %s", mes);
-                    //TLSETJ *jogadoresmes = JogadoresNasceramMesmoMes(raiz, t, mes);
+                    TLSETJ *jogadoresmes = JogadoresNasceramMesmoMes(raiz, t, mes);
                     printf("\n");
                     printf("Jogadores que nasceram no mês de %s:\n\n", mes);
-                    //TLSETJ_imprime(jogadoresmes);
+                    TLSETJ_imprime(jogadoresmes);
                     //TLSETJ_libera(jogadoresmes);
                 }
                 else if(n2 == 12){
                     //VERIFICAR SE IMPRIME MENOR TAMBÉM
                     printf("\n");
-                    printf("Seleção com mais e menos jogadores jogando fora do país de origem, respectivamente:\n\n");
+                    printf("Seleção com mais jogadores jogando fora do país de origem:\n\n");
                     PrintSelecoesComMaisFora(raiz, t);
                 }
                 else if(n2 == 13){
                     //VERIFICAR SE IMPRIME MENOR TAMBÉM
                     printf("\n");
-                    printf("Seleção com mais e menos jogadores jogando em seu país de origem, respectivamente:\n\n");
+                    printf("Seleção com mais jogadores jogando em seu país de origem:\n\n");
                     PrintSelecoesComMaisDentro(raiz, t);
                 }
                 else if(n2 == 14){

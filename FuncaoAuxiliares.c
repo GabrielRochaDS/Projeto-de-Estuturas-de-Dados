@@ -21,6 +21,12 @@ typedef struct Id_Pais{
     char pais[40];
 }Id_Pais;
 
+typedef struct Id_AnoMes{
+    int id;
+    char ano[10];
+    char mes[20];
+}Id_AnoMes;
+
 
 //=========================================Funçoes Inserção====================================================//
 
@@ -235,8 +241,81 @@ void removeId_Pais(int id){
     fclose(arq);
 }
 
+//===============Id_AnoMes===============//
+void printId_AnoMes(){
+    FILE *arq = fopen("Id_AnoMes.bin","rb+");
+    if(!arq)exit(1);
+    Id_AnoMes id_anomes;
+    int aux; 
+
+    while(1){
+        aux = fread(&id_anomes, sizeof(Id_AnoMes), 1, arq);
+        if(aux != 1)break;
+        if(id_anomes.id == -1)continue;
+        printf("(%i %s %s) ", id_anomes.id, id_anomes.mes, id_anomes.ano);
+    }
+    fclose(arq);
+    printf("\n");
+}
+
+void insertId_AnoMes( Id_AnoMes *jogador, int i){
+    if(i == 1){
+        FILE *arq = fopen("Id_AnoMes.bin","wb+");
+        if(!arq)exit(1);
+        fwrite(jogador, sizeof(Id_AnoMes), 1, arq);
+        fclose(arq);
+        return;
+    }
+
+    FILE *arq = fopen("Id_AnoMes.bin","rb+");
+    if(!arq)exit(1);
+    fseek(arq, 0, SEEK_END);
+    int tam = ftell(arq)/sizeof(Id_AnoMes);
+
+    Id_AnoMes comparador;
+    int j = tam-1;
+    fseek(arq, j*sizeof(Id_AnoMes), SEEK_SET);
+
+    fread(&comparador, sizeof(Id_AnoMes), 1, arq);
+    while(strcmp(comparador.ano, jogador->ano)>=0){
+        fseek(arq, (j+1)*sizeof(Id_AnoMes), SEEK_SET);
+        fwrite(&comparador, sizeof(Id_AnoMes), 1, arq);
+
+        j--;
+        if(j<0)break;
+        fseek(arq, j*sizeof(Id_AnoMes), SEEK_SET);
+        fread(&comparador, sizeof(Id_AnoMes), 1, arq);
+    }
+    fseek(arq, (j+1)*sizeof(Id_AnoMes), SEEK_SET);
+    fwrite(jogador, sizeof(Id_AnoMes), 1, arq);
+    fclose(arq);
+}
+
+void removeId_AnoMes(int id){
+    FILE *arq = fopen("Id_AnoMes.bin","rb+");
+    if(!arq)exit(1);
+    Id_AnoMes comparador;
+    int aux;
+    while(1){
+        aux = fread(&comparador, sizeof(Id_AnoMes), 1, arq);
+        if(aux != 1){
+            printf("Jogador não encontrado.");
+            return;
+        }
+        if(id == comparador.id)break;
+    
+    }
+    fseek(arq, -sizeof(Id_AnoMes), SEEK_CUR);
+    comparador.id = -1;
+    strcpy(comparador.ano, "-1");
+    strcpy(comparador.mes, "-1");
+    fwrite(&comparador, sizeof(Id_AnoMes), 1, arq);
+    fclose(arq);
+}
+
 
 //=========================================Funçoes Busca====================================================//
+TJ *BuscaPorId(char *raiz, int t, int id);
 
 //===============Mais novo Mais Velho===============// Q1
 
@@ -607,6 +686,52 @@ TLSETJ *Jogadores_AtuamNaOrigem(char *raiz, int t){
         TABM_Libera_no(novo, t);
     }
     fclose(arq);
+    return resp;
+}
+
+//===============Busca de jogadores que nasceram no mesmo mes===============// Q7
+TLSETJ *JogadoresNasceramMesmoAno(char *raiz, int t, char *ano){
+    FILE *fp = fopen("Id_AnoMes.bin", "rb");
+    if (!fp) exit(1);
+
+    Id_AnoMes idAnoMes;
+    int aux;
+    TLSETJ *resp = NULL;
+
+    while(1){
+        aux = fread(&idAnoMes, sizeof(Id_AnoMes), 1, fp);
+        if (!aux) break;
+        if (idAnoMes.id == -1) continue;
+
+        if(strcmp(ano, idAnoMes.ano) == 0){
+            TJ *novo = BuscaPorId(raiz, t, idAnoMes.id);
+            resp = TLSETJ_insere(resp, novo);
+        }
+    }
+    fclose(fp);
+    return resp;
+}
+
+//===============Busca de jogadores que nasceram no mesmo mes===============// Q8
+TLSETJ *JogadoresNasceramMesmoMes(char *raiz, int t, char *mes){
+    FILE *fp = fopen("Id_AnoMes.bin", "rb");
+    if (!fp) exit(1);
+
+    Id_AnoMes idAnoMes;
+    int aux;
+    TLSETJ *resp = NULL;
+
+    while(1){
+        aux = fread(&idAnoMes, sizeof(Id_AnoMes), 1, fp);
+        if (!aux) break;
+        if (idAnoMes.id == -1) continue;
+
+        if(strcmp(mes, idAnoMes.mes) == 0){
+            TJ *novo = BuscaPorId(raiz, t, idAnoMes.id);
+            resp = TLSETJ_insere(resp, novo);
+        }
+    }
+    fclose(fp);
     return resp;
 }
 
